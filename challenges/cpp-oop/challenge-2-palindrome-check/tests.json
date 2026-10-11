@@ -1,0 +1,22 @@
+[
+  {
+    "input": "radar\n",
+    "expectedOutput": "YES",
+    "isHidden": false
+  },
+  {
+    "input": "interview\n",
+    "expectedOutput": "NO",
+    "isHidden": false
+  },
+  {
+    "input": "level\n",
+    "expectedOutput": "YES",
+    "isHidden": true
+  },
+  {
+    "input": "cpp\n",
+    "expectedOutput": "NO",
+    "isHidden": true
+  }
+]

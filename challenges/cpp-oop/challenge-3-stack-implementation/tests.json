@@ -1,0 +1,17 @@
+[
+  {
+    "input": "5\npush 10\npush 20\npeek\npop\npop\n",
+    "expectedOutput": "20\n20\n10",
+    "isHidden": false
+  },
+  {
+    "input": "3\npop\npush 5\npop\n",
+    "expectedOutput": "EMPTY\n5",
+    "isHidden": false
+  },
+  {
+    "input": "4\npush 1\npush 2\npush 3\npeek\n",
+    "expectedOutput": "3",
+    "isHidden": true
+  }
+]

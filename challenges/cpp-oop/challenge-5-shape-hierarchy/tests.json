@@ -1,0 +1,17 @@
+[
+  {
+    "input": "2\ncircle 3\nrectangle 4 5\n",
+    "expectedOutput": "Circle: 28.27\nRectangle: 20.00",
+    "isHidden": false
+  },
+  {
+    "input": "1\ncircle 1\n",
+    "expectedOutput": "Circle: 3.14",
+    "isHidden": false
+  },
+  {
+    "input": "2\nrectangle 10 2.5\ncircle 5\n",
+    "expectedOutput": "Rectangle: 25.00\nCircle: 78.54",
+    "isHidden": true
+  }
+]

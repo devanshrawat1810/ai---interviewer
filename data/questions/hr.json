@@ -1,0 +1,128 @@
+[
+  {
+    "id": "hr_e1",
+    "subject": "hr",
+    "topic": "career_vision",
+    "difficulty": "EASY",
+    "type": "text",
+    "text": "How do you introduce yourself professionally at the beginning of an interview?",
+    "sampleAnswer": "Highlight your educational background, core technical skills, key projects, and enthusiasm for the role.",
+    "keywords": ["education", "skills", "projects", "passion", "background", "experience"],
+    "explanation": "A strong self-introduction succinctly summarizes education, technical proficiency, relevant project accomplishments, and alignment with the company."
+  },
+  {
+    "id": "hr_e2",
+    "subject": "hr",
+    "topic": "career_vision",
+    "difficulty": "EASY",
+    "type": "mcq",
+    "text": "What does the STAR interview response framework stand for?",
+    "options": ["Situation, Task, Action, Result", "Strategy, Timing, Ability, Review", "Scope, Technique, Achievement, Return", "Skill, Target, Attitude, Reaction"],
+    "answer": "Situation, Task, Action, Result",
+    "keywords": ["star", "situation", "task", "action", "result"],
+    "explanation": "STAR is the gold standard for behavioral interviews: Situation, Task, Action, Result."
+  },
+  {
+    "id": "hr_e3",
+    "subject": "hr",
+    "topic": "behavioral",
+    "difficulty": "EASY",
+    "type": "text",
+    "text": "How do you handle constructive criticism or code review feedback from teammates?",
+    "sampleAnswer": "Listen objectively without defensiveness, seek clarification on points of improvement, and apply the recommendations to enhance code quality.",
+    "keywords": ["listen", "objective", "improve", "learn", "feedback", "quality"],
+    "explanation": "Responding positively to criticism demonstrates humility, growth mindset, and collaborative professionalism."
+  },
+  {
+    "id": "hr_e4",
+    "subject": "hr",
+    "topic": "career_vision",
+    "difficulty": "EASY",
+    "type": "mcq",
+    "text": "When an interviewer asks 'Do you have any questions for us?', what is the best approach?",
+    "options": ["Ask no questions to conclude quickly", "Ask insightful questions about team engineering culture, mentorship, and tech stack", "Only ask about vacation policies", "Inquire about salary immediately"],
+    "answer": "Ask insightful questions about team engineering culture, mentorship, and tech stack",
+    "keywords": ["culture", "questions", "team"],
+    "explanation": "Asking thoughtful questions demonstrates active engagement, curiosity, and alignment with the team culture."
+  },
+  {
+    "id": "hr_m1",
+    "subject": "hr",
+    "topic": "behavioral",
+    "difficulty": "MEDIUM",
+    "type": "text",
+    "text": "Describe a scenario where you faced a tight project deadline and how you prioritized deliverables.",
+    "sampleAnswer": "Communicated early with stakeholders, identified core MVP features versus non-critical enhancements, eliminated blockers, and delivered the critical path on time.",
+    "keywords": ["prioritize", "deadline", "mvp", "communication", "blockers", "delivery"],
+    "explanation": "Demonstrates composure under pressure, stakeholder transparency, and pragmatic feature triage."
+  },
+  {
+    "id": "hr_m2",
+    "subject": "hr",
+    "topic": "behavioral",
+    "difficulty": "MEDIUM",
+    "type": "mcq",
+    "text": "What is the most constructive way to resolve a technical disagreement with a senior engineer?",
+    "options": ["Immediately escalate to senior management", "Back your proposal with data, benchmark tests, and architectural trade-offs in a respectful discussion", "Ignore their input and build your own way", "Agree silently even if it breaks system safety"],
+    "answer": "Back your proposal with data, benchmark tests, and architectural trade-offs in a respectful discussion",
+    "keywords": ["data", "benchmark", "respect", "trade-offs"],
+    "explanation": "Healthy engineering culture relies on objective empirical evidence, benchmark metrics, and mutual professional respect."
+  },
+  {
+    "id": "hr_m3",
+    "subject": "hr",
+    "topic": "career_vision",
+    "difficulty": "MEDIUM",
+    "type": "text",
+    "text": "Where do you envision your career growth progressing over the next 3 to 5 years?",
+    "sampleAnswer": "Deepening my expertise in distributed systems architecture, taking ownership of core services, mentoring junior engineers, and driving system reliability.",
+    "keywords": ["growth", "ownership", "systems", "mentorship", "architecture", "leadership"],
+    "explanation": "Illustrates ambition, long-term technical vision, organizational ownership, and commitment to continuous learning."
+  },
+  {
+    "id": "hr_m4",
+    "subject": "hr",
+    "topic": "behavioral",
+    "difficulty": "MEDIUM",
+    "type": "mcq",
+    "text": "Which attribute best characterizes strong emotional intelligence (EQ) in an engineering team?",
+    "options": ["High typing speed", "Active listening, empathy, and psychological safety", "Avoiding teamwork", "Working exclusively alone"],
+    "answer": "Active listening, empathy, and psychological safety",
+    "keywords": ["empathy", "listening", "psychological safety"],
+    "explanation": "High EQ manifests in empathetic active listening and fostering psychological safety where team members collaborate freely."
+  },
+  {
+    "id": "hr_h1",
+    "subject": "hr",
+    "topic": "behavioral",
+    "difficulty": "HARD",
+    "type": "text",
+    "text": "How do you navigate ethical dilemmas in software engineering, such as being pressured to ship untested code that may expose user privacy?",
+    "sampleAnswer": "Firmly advocate for user trust and safety, document specific risks and compliance liabilities in writing, propose a phased mitigation release, and escalate through engineering leadership if necessary.",
+    "keywords": ["ethics", "privacy", "risk", "advocate", "document", "safety", "trust"],
+    "explanation": "Ethical integrity is paramount: software engineers have a fiduciary and professional obligation to protect user privacy and system security."
+  },
+  {
+    "id": "hr_h2",
+    "subject": "hr",
+    "topic": "career_vision",
+    "difficulty": "HARD",
+    "type": "text",
+    "text": "Describe your strategy for preventing burnout and sustaining high productivity during prolonged high-intensity engineering cycles.",
+    "sampleAnswer": "Establish clear working boundaries, automate repetitive workflows, practice deliberate cognitive recovery, communicate capacity constraints transparently, and maintain regular physical health routines.",
+    "keywords": ["boundaries", "burnout", "recovery", "automation", "capacity", "sustainable"],
+    "explanation": "Sustainable engineering performance requires intentional work-life boundaries, capacity planning, and deliberate physical/mental recovery routines."
+  },
+  {
+    "id": "hr_h3",
+    "subject": "hr",
+    "topic": "behavioral",
+    "difficulty": "HARD",
+    "type": "mcq",
+    "text": "In a post-mortem review after a critical production outage, what is the most effective cultural practice?",
+    "options": ["Assign personal blame to the engineer who deployed the bug", "Conduct a blameless post-mortem analyzing root causes, systemic safeguards, and automated telemetry improvements", "Delete the logs to avoid customer scrutiny", "Prevent all further software deployments indefinitely"],
+    "answer": "Conduct a blameless post-mortem analyzing root causes, systemic safeguards, and automated telemetry improvements",
+    "keywords": ["blameless", "post-mortem", "root cause", "safeguards"],
+    "explanation": "Blameless post-mortems treat incidents as opportunities to fix systemic vulnerabilities, design safeguards, and improve automation without fear of personal retribution."
+  }
+]

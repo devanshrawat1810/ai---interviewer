@@ -1,0 +1,22 @@
+[
+  {
+    "input": "hello\n",
+    "expectedOutput": "olleh",
+    "isHidden": false
+  },
+  {
+    "input": "world\n",
+    "expectedOutput": "dlrow",
+    "isHidden": false
+  },
+  {
+    "input": "racecar\n",
+    "expectedOutput": "racecar",
+    "isHidden": true
+  },
+  {
+    "input": "antigravity\n",
+    "expectedOutput": "ytivargitna",
+    "isHidden": true
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "name": "ai-interviewer",
+  "version-string": "1.0.0",
+  "description": "C++17 AI Interviewer console application with MongoDB and JSON storage",
+  "dependencies": [
+    "nlohmann-json",
+    "gtest",
+    "mongo-cxx-driver"
+  ]
+}

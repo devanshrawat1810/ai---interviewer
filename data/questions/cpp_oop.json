@@ -1,0 +1,130 @@
+[
+  {
+    "id": "cpp_e1",
+    "subject": "cpp_oop",
+    "topic": "classes_objects",
+    "difficulty": "EASY",
+    "type": "mcq",
+    "text": "What access specifier makes class members accessible only within the class and its friends?",
+    "options": ["public", "private", "protected", "internal"],
+    "answer": "private",
+    "keywords": ["private", "access"],
+    "explanation": "In C++, the 'private' specifier restricts visibility exclusively to member functions and friend classes/functions."
+  },
+  {
+    "id": "cpp_e2",
+    "subject": "cpp_oop",
+    "topic": "classes_objects",
+    "difficulty": "EASY",
+    "type": "mcq",
+    "text": "Which special member function is called automatically when an object's scope ends?",
+    "options": ["Constructor", "Destructor", "Finalizer", "Cleaner"],
+    "answer": "Destructor",
+    "keywords": ["destructor", "cleanup"],
+    "explanation": "Destructors clean up resources and are automatically invoked during RAII stack unwinding."
+  },
+  {
+    "id": "cpp_e3",
+    "subject": "cpp_oop",
+    "topic": "classes_objects",
+    "difficulty": "EASY",
+    "type": "text",
+    "text": "Explain what encapsulation means in Object-Oriented Programming and how it protects data.",
+    "sampleAnswer": "Encapsulation bundles data members and operating functions together, hiding internal state via private access specifiers.",
+    "keywords": ["bundle", "data", "hiding", "private", "methods"],
+    "explanation": "Encapsulation enforces data hiding by restricting direct modification of state except through validated member functions."
+  },
+  {
+    "id": "cpp_e4",
+    "subject": "cpp_oop",
+    "topic": "memory_stl",
+    "difficulty": "EASY",
+    "type": "mcq",
+    "text": "Which C++17 smart pointer represents exclusive ownership of a dynamic resource?",
+    "options": ["std::shared_ptr", "std::unique_ptr", "std::weak_ptr", "std::auto_ptr"],
+    "answer": "std::unique_ptr",
+    "keywords": ["unique_ptr", "exclusive"],
+    "explanation": "std::unique_ptr cannot be copied, guaranteeing single exclusive ownership with zero overhead."
+  },
+  {
+    "id": "cpp_m1",
+    "subject": "cpp_oop",
+    "topic": "polymorphism",
+    "difficulty": "MEDIUM",
+    "type": "mcq",
+    "text": "What mechanism does C++ use under the hood to resolve polymorphic function calls at runtime?",
+    "options": ["RTTI only", "Virtual table (vtable) and virtual pointer (vptr)", "Hash map lookup", "Switch statement branch"],
+    "answer": "Virtual table (vtable) and virtual pointer (vptr)",
+    "keywords": ["vtable", "vptr", "virtual"],
+    "explanation": "Compilers generate a vtable containing function pointers for virtual methods, referenced by the hidden vptr in each object instance."
+  },
+  {
+    "id": "cpp_m2",
+    "subject": "cpp_oop",
+    "topic": "polymorphism",
+    "difficulty": "MEDIUM",
+    "type": "text",
+    "text": "Why must base classes designed for polymorphic deletion declare a virtual destructor?",
+    "sampleAnswer": "Declaring a virtual destructor ensures that the derived class destructor is invoked when deleting through a base pointer, preventing resource leaks.",
+    "keywords": ["derived", "destructor", "leak", "base", "pointer", "cleanup"],
+    "explanation": "Without a virtual destructor, deleting a derived instance via a Base* yields undefined behavior and skips derived destructor cleanup."
+  },
+  {
+    "id": "cpp_m3",
+    "subject": "cpp_oop",
+    "topic": "memory_stl",
+    "difficulty": "MEDIUM",
+    "type": "mcq",
+    "text": "What is the primary danger of using std::shared_ptr without careful ownership modeling?",
+    "options": ["Dangling references", "Cyclic references leading to memory leaks", "Double deletion", "Stack overflow"],
+    "answer": "Cyclic references leading to memory leaks",
+    "keywords": ["cyclic", "reference", "leak", "weak_ptr"],
+    "explanation": "Cyclic reference chains between shared_ptr instances prevent the reference count from ever reaching zero; use std::weak_ptr to break cycles."
+  },
+  {
+    "id": "cpp_m4",
+    "subject": "cpp_oop",
+    "topic": "design_patterns",
+    "difficulty": "MEDIUM",
+    "type": "mcq",
+    "text": "Which design pattern is used to instantiate objects without specifying the exact concrete class in client code?",
+    "options": ["Singleton", "Factory Method", "Observer", "Adapter"],
+    "answer": "Factory Method",
+    "keywords": ["factory", "creation", "instantiation"],
+    "explanation": "The Factory Method defines an interface for object creation while delegating instantiation decisions to subclasses."
+  },
+  {
+    "id": "cpp_h1",
+    "subject": "cpp_oop",
+    "topic": "polymorphism",
+    "difficulty": "HARD",
+    "type": "text",
+    "text": "Explain the Diamond Problem in multiple inheritance and how virtual inheritance solves it in C++.",
+    "sampleAnswer": "The diamond problem occurs when two classes inherit from a common base and a fourth inherits from both, duplicating base instances. Virtual inheritance ensures only one shared base subobject exists.",
+    "keywords": ["diamond", "multiple", "inheritance", "virtual", "duplicate", "subobject"],
+    "explanation": "Virtual base classes ensure that the common ancestor is instantiated only once in the most derived object, resolving ambiguity."
+  },
+  {
+    "id": "cpp_h2",
+    "subject": "cpp_oop",
+    "topic": "memory_stl",
+    "difficulty": "HARD",
+    "type": "mcq",
+    "text": "What does std::launder accomplish in C++17?",
+    "options": ["Cleans memory buffers with zeros", "Obtains a valid pointer to an object created in storage of another object of the same type", "Prevents multithreaded data races", "Allocates aligned memory"],
+    "answer": "Obtains a valid pointer to an object created in storage of another object of the same type",
+    "keywords": ["launder", "pointer", "optimization"],
+    "explanation": "std::launder informs the compiler's strict aliasing and pointer provenance optimizer that an object with const/reference members was placed in existing storage."
+  },
+  {
+    "id": "cpp_h3",
+    "subject": "cpp_oop",
+    "topic": "design_patterns",
+    "difficulty": "HARD",
+    "type": "text",
+    "text": "Describe the Strategy Pattern and contrast how it differs from template-based compile-time polymorphism (CRTP).",
+    "sampleAnswer": "Strategy pattern achieves runtime polymorphism via virtual interfaces, allowing dynamic algorithm swapping. CRTP achieves compile-time polymorphism with zero runtime virtual dispatch overhead.",
+    "keywords": ["runtime", "compile", "virtual", "dispatch", "crtp", "dynamic", "performance"],
+    "explanation": "Strategy offers dynamic runtime adaptability via interface pointers, whereas CRTP incurs zero vtable overhead through static template parameterization."
+  }
+]
