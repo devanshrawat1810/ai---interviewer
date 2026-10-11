@@ -21,6 +21,17 @@ struct FeedbackReport {
     std::string weakestTopic;
     std::vector<std::string> suggestions;
     std::string aiEvaluation; // Optional commentary from AI generator
+
+    // Phase 4: Extended AI Qualitative Metrics
+    bool isAiGenerated{false};
+    std::string overallSummary;
+    std::vector<std::string> strengths;
+    std::vector<std::string> weaknesses;
+    std::map<std::string, std::string> perTopicNotes;
+    int communicationClarity{3}; // Scale 1 - 5
+    int answerStructure{3};      // Scale 1 - 5
+    int confidenceCues{3};       // Scale 1 - 5
+    std::string notice;          // Fallback notice or provider metadata
 };
 
 // OOP Concept: Abstraction & Open/Closed Principle

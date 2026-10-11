@@ -137,25 +137,99 @@ For immediate evaluation, the following pre-configured accounts are provided in 
 
 ---
 
-## 5. OOP Concepts & Design Patterns Reference
+---
 
-| Concept / Pattern | Component | Demonstration |
-| :--- | :--- | :--- |
-| **Abstraction** | `Question`, `QuestionSelectionStrategy`, `FeedbackGenerator`, `RankingStrategy`, `IClock` | Pure virtual interfaces defining strict contracts without implementation details. |
-| **Inheritance & Polymorphism** | `MCQQuestion`, `TextQuestion`, `CodingQuestion`, `Student`, `Admin`, `SystemClock`, `FakeClock` | Derived classes overriding virtual methods; runtime polymorphism via base class pointers. |
-| **Encapsulation** | `User`, `Student`, `InterviewSession`, `AdminService` | Hidden state with protected accessors, cryptographic salting/hashing, and immutable IDs. |
-| **Composition** | `Course` $\rightarrow$ `Subject` $\rightarrow$ `Topic` | Curricula hierarchy modeled through strict composition (lifecycle containment). |
-| **Strategy Pattern** | `LinearRampStrategy`, `AdaptiveStrategy`, `RankingStrategy`, `BadgeRule` | Interchangeable algorithms for question ramps, leaderboard ranking, and badge rules. |
-| **Factory Pattern** | `SessionFactory`, `RepositoryFactory` | Centralized creation and wiring of polymorphic sessions and repository bundles. |
-| **Dependency Inversion (DIP)** | Repositories & Services (`IUserRepository`, `IClock`, etc.) | High-level business logic depends on interfaces, decoupling code from Mongo/JSON storage. |
-| **Singleton Pattern** | `Database` | Single thread-safe management point for Mongo driver instance and connection pools. |
-| **Template Programming** | `Leaderboard<T>` | Generic ranking engine compatible with diverse candidate containers. |
+## 5. Phase 4: AI Interviewer Suite
+
+Phase 4 introduces provider-neutral, LLM-powered feedback, dynamic follow-up questioning, resume-based mock interviews, and personalized answer coaching with full offline/graceful fallback.
+
+### 1. Provider-Neutral Architecture
+The LLM abstraction uses the **Strategy** and **Factory** patterns:
+- **`ILLMClient`**: Interface declaring `complete(const LLMRequest&) -> LLMResponse`.
+- **`OpenAICompatibleClient`**: Targets OpenAI API models (`gpt-4o`, `gpt-4o-mini`) and Gemini's OpenAI-compatible endpoint.
+- **`AnthropicClient`**: Targets Anthropic Claude API (`claude-3-5-sonnet-20241022`, `claude-3-haiku-20240307`) using the Claude Messages API format (`anthropic-version: 2023-06-01`).
+- **`MockLLMClient`**: Test double supporting scripted responses and error simulation without real network calls.
+- **`NullLLMClient`**: Safe Null Object returned when no API key is configured. Throws `AiUnavailableException` to seamlessly trigger offline rule-based fallbacks.
+
+### 2. Supported Features
+- **AI-Powered Feedback (`AIFeedback`)**: Extends `FeedbackGenerator`. Combines deterministic scoring with qualitative LLM evaluations (communication clarity 1-5, answer structure 1-5, confidence cues 1-5, strengths, weaknesses, and concrete recommendations).
+- **Dynamic Follow-Up Questions (`FollowUpGenerator`)**: Triggers after a student provides a substantive answer on Text/HR questions, generating a tailored follow-up question that digs deeper into what the student actually said.
+- **Resume-Based Mock Interviews (`ResumeInterviewMode` & `ResumeAnalyzer`)**: Extracts skills, projects, and domain experience from a student's resume (max 6,000 characters) and generates 8-10 customized interview questions mapped to existing question models.
+- **Answer Review Coaching (`AnswerReviewer`)**: On-demand single-answer analysis providing a score (1-5), specific strengths, improvement areas, and a rewritten model answer.
+- **Usage & Rate Limiting (`UsageTracker` & `ResponseCache`)**: Enforces daily AI quotas (default 30 calls/day, 5 answer reviews/day) and caches responses across identical prompts.
+
+### 3. AI Setup & Environment Variables
+
+Configure the following variables in your terminal or `.env` file:
+
+```bash
+# Provider selection: 'openai', 'gemini', 'anthropic', or 'mock'
+export AI_PROVIDER=openai
+
+# Your API Key (leave unset or empty to use offline rule-based mode)
+export AI_API_KEY="your-api-key-here"
+
+# Model selection
+export AI_MODEL="gpt-4o-mini"
+
+# Optional Base URL override (e.g. for local Ollama, vLLM, or reverse proxies)
+export AI_BASE_URL="https://api.openai.com/v1"
+
+# Request timeout in seconds (default: 30)
+export AI_TIMEOUT_SECONDS=30
+
+# Daily call quota per user (default: 30)
+export AI_DAILY_LIMIT=30
+```
+
+#### Obtaining an API Key
+- **OpenAI**: Sign up at [platform.openai.com](https://platform.openai.com/), navigate to API Keys, and create a new secret key.
+- **Gemini**: Sign up at [aistudio.google.com](https://aistudio.google.com/), generate an API key, set `AI_PROVIDER=gemini`, `AI_MODEL=gemini-1.5-flash`, and optionally `AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/`.
+- **Anthropic**: Sign up at [console.anthropic.com](https://console.anthropic.com/), navigate to API Keys, set `AI_PROVIDER=anthropic`, and set `AI_MODEL=claude-3-5-sonnet-20241022`.
+
+### 4. Privacy & Security Guarantees
+- **Prompt Injection Defense**: All user inputs (student answers, resume text) are sanitized via `PromptLibrary::sanitizeInput()` to neutralize jailbreak delimiters, role-override tags (`[SYSTEM]`), and recursive instructions.
+- **Untrusted Data Delimiters**: Prompts wrap user content within explicit `<<<STUDENT_ANSWER>>>` and `<<<RESUME_CONTENT>>>` markers with strict system instructions prohibiting directive execution.
+- **Resume Data Privacy**: Students must explicitly provide consent before resume text is processed. Raw resumes are **never** stored in the database or logged; only student-confirmed extracted skill tags are persisted to the profile.
+- **API Key Protection**: API keys are never stored, logged, or printed. All debug strings mask keys using `HttpClient::maskApiKey()` (e.g., `sk-****1234`).
 
 ---
 
-## 6. Running Tests
+## 6. Manual Testing Checklist (for Real API Key Verification)
 
-The test suite consists of **12 Google Test specifications** covering unit logic, domain rules, algorithms, and typed repository contracts:
+When testing live LLM connectivity with an actual API key:
+
+- [ ] **Offline Status**: Run app with `AI_API_KEY=""`. Ensure dashboard displays `AI Features: Disabled` and mock interviews generate rule-based feedback without errors.
+- [ ] **OpenAI Connectivity**: Set `AI_PROVIDER=openai`, `AI_API_KEY=sk-...`, and complete an interview. Verify "AI-generated feedback" appears with clarity ratings (1-5).
+- [ ] **Gemini Connectivity**: Set `AI_PROVIDER=gemini` and verify compatible completion endpoint handling.
+- [ ] **Anthropic Connectivity**: Set `AI_PROVIDER=anthropic` and verify Messages API v1 request handling.
+- [ ] **Resume Upload & Consent**: Select option 3 in the student menu, paste a resume under 6,000 characters, confirm consent, and verify that tailored questions reflect your resume projects.
+- [ ] **Resume Size Limit**: Attempt pasting a resume with $>6,000$ characters and confirm validation rejection.
+- [ ] **Daily Quota Enforcement**: Set `AI_DAILY_LIMIT=2`, execute 2 AI interviews, and confirm the third triggers a quota limit message.
+- [ ] **Answer Review Coaching**: Select option 8, input an answer, and verify that a 1-5 rating, critiques, and an improved model answer are returned.
+
+---
+
+## 7. OOP Concepts & Design Patterns Reference
+
+| Concept / Pattern | Component | Demonstration |
+| :--- | :--- | :--- |
+| **Abstraction** | `Question`, `QuestionSelectionStrategy`, `FeedbackGenerator`, `RankingStrategy`, `IClock`, `ILLMClient`, `IHttpTransport`, `IAiUsageRepository` | Pure virtual interfaces defining strict contracts without implementation details. |
+| **Inheritance & Polymorphism** | `MCQQuestion`, `TextQuestion`, `CodingQuestion`, `Student`, `Admin`, `AIFeedback`, `RuleBasedFeedback`, `OpenAICompatibleClient`, `AnthropicClient`, `MockLLMClient`, `NullLLMClient` | Derived classes overriding virtual methods; runtime polymorphism via base class pointers. |
+| **Encapsulation** | `User`, `Student`, `InterviewSession`, `AdminService`, `HttpClient`, `UsageTracker` | Hidden state with protected accessors, cryptographic salting/hashing, and immutable IDs. |
+| **Composition** | `Course` $\rightarrow$ `Subject` $\rightarrow$ `Topic`, `AIFeedback` (has `ILLMClient` and fallback `RuleBasedFeedback`) | Curricula hierarchy and feedback fallback mechanisms modeled through object containment. |
+| **Strategy Pattern** | `LinearRampStrategy`, `AdaptiveStrategy`, `RankingStrategy`, `BadgeRule`, `ILLMClient` implementations | Interchangeable algorithms for question ramps, leaderboard ranking, badge rules, and LLM providers. |
+| **Factory Pattern** | `SessionFactory`, `RepositoryFactory`, `LLMClientFactory` | Centralized creation and wiring of polymorphic sessions, repository bundles, and AI clients. |
+| **Null Object Pattern** | `NullLLMClient` | Safe no-op object preventing null pointer dereferences and enabling seamless offline fallback. |
+| **Dependency Inversion (DIP)** | Repositories & Services (`IUserRepository`, `IClock`, `IAiUsageRepository`, `IHttpTransport`) | High-level business logic depends on interfaces, decoupling code from external services. |
+| **Singleton Pattern** | `Database` | Single thread-safe management point for Mongo driver instance and connection pools. |
+| **RAII Pattern** | `HttpClient` | Resource Acquisition Is Initialization for managing curl global/easy handles safely. |
+
+---
+
+## 8. Running Tests
+
+The test suite consists of **20 Google Test specifications** covering unit logic, domain rules, algorithms, typed repository contracts, and Phase 4 AI modules (all mocked, zero real network calls):
 
 ```bash
 # Run tests using CTest
@@ -166,7 +240,7 @@ ctest --test-dir build --output-on-failure
 .\build\Release\ai_interviewer_tests.exe  # Windows MSVC
 ```
 
-### Test Suites Included:
+### Complete Test Suites:
 1. `test_auth.cpp`: Registration, salting, SHA-256 hashing, login attempt throttling.
 2. `test_questions.cpp`: MCQ and Text keyword evaluation, difficulty scaling.
 3. `test_coding_questions.cpp`: Coding challenge subprocess execution and timeout protection.
@@ -179,3 +253,12 @@ ctest --test-dir build --output-on-failure
 10. `test_daily_challenge.cpp`: Deterministic daily seed selection, 30-day anti-repeat, FakeClock time travel.
 11. `test_streak.cpp`: Consecutive streaks, missed day resets, longest streak, ASCII calendar grid.
 12. `test_ranking_strategy.cpp`: Score, Solved, and Streak ranking strategies with custom candidate data.
+13. `test_http_client.cpp`: FakeTransport retry logic, backoff, 429/5xx retries, 4xx abort, API key masking.
+14. `test_llm_clients.cpp`: LLMClientFactory provider selection, NullLLMClient offline mode, MockLLMClient scripting.
+15. `test_response_parser.cpp`: Markdown fence stripping, JSON schema extraction, score clamping, repair fallbacks.
+16. `test_ai_feedback.cpp`: AIFeedback generation, parse failure fallback, network error fallback.
+17. `test_followup.cpp`: Follow-up generation, max-3 limits, half-points score awarding.
+18. `test_prompt_injection.cpp`: PromptLibrary sanitization, jailbreak neutralization, input size truncation.
+19. `test_resume_mode.cpp`: Resume length validation (>6,000 characters rejection), privacy consent, LLM skill extraction.
+20. `test_usage_tracker.cpp`: Daily call quota countdown, calendar date rollover, answer review rate limits.
+

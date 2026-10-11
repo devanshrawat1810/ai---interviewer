@@ -16,6 +16,8 @@
 #include "db/MongoScoreboardRepository.h"
 #include "db/MongoDailyChallengeRepository.h"
 #include "db/MongoQuestionFeedbackRepository.h"
+#include "db/JsonAiUsageRepository.h"
+#include "db/MongoAiUsageRepository.h"
 #include <iostream>
 #include <cstdlib>
 #include <algorithm>
@@ -65,6 +67,7 @@ RepositoryBundle RepositoryFactory::createRepositories(const std::string& prefer
         bundle.scoreboardRepo = std::make_unique<MongoScoreboardRepository>();
         bundle.dailyRepo = std::make_unique<MongoDailyChallengeRepository>();
         bundle.questionFeedbackRepo = std::make_unique<MongoQuestionFeedbackRepository>();
+        bundle.aiUsageRepo = std::make_unique<MongoAiUsageRepository>();
     } else {
         bundle.userRepo = std::make_unique<JsonUserRepository>();
         bundle.questionRepo = std::make_unique<JsonQuestionRepository>();
@@ -74,6 +77,7 @@ RepositoryBundle RepositoryFactory::createRepositories(const std::string& prefer
         bundle.scoreboardRepo = std::make_unique<JsonScoreboardRepository>();
         bundle.dailyRepo = std::make_unique<JsonDailyChallengeRepository>();
         bundle.questionFeedbackRepo = std::make_unique<JsonQuestionFeedbackRepository>();
+        bundle.aiUsageRepo = std::make_unique<JsonAiUsageRepository>();
     }
 
     return bundle;
@@ -126,3 +130,10 @@ std::unique_ptr<IQuestionFeedbackRepository> RepositoryFactory::createQuestionFe
     if (active == "mongo") return std::make_unique<MongoQuestionFeedbackRepository>();
     return std::make_unique<JsonQuestionFeedbackRepository>();
 }
+
+std::unique_ptr<IAiUsageRepository> RepositoryFactory::createAiUsageRepository(const std::string& backend) {
+    std::string active = resolveBackend(backend);
+    if (active == "mongo") return std::make_unique<MongoAiUsageRepository>();
+    return std::make_unique<JsonAiUsageRepository>();
+}
+

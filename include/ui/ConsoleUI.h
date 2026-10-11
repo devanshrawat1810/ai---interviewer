@@ -17,6 +17,11 @@
 #include "core/Student.h"
 #include "core/Admin.h"
 #include "course/Course.h"
+#include "feedback/AIFeedback.h"
+#include "interview/ResumeInterviewMode.h"
+#include "ai/FollowUpGenerator.h"
+#include "ai/UsageTracker.h"
+#include "ai/AnswerReviewer.h"
 
 // OOP Concept: Dependency Injection & Separation of Concerns
 // Terminal user interface encapsulating interactive menus for students and administrators.
@@ -46,13 +51,22 @@ private:
     // Student workflows
     void showDashboard();
     void handleTakeInterview();
+    void handleResumeInterview();
     void handleDailyChallenge();
     void handleStreakCalendar();
     void handleCodingChallenges();
     void handleReviewWrongAnswers();
+    void handleAnswerReviewCoaching();
     void handleBookmarkedQuestions();
     void handleViewProfile();
     void handleViewLeaderboard();
+
+    // Phase 4 AI Components
+    std::shared_ptr<AIFeedback> aiFeedback_{std::make_shared<AIFeedback>()};
+    std::shared_ptr<ResumeInterviewMode> resumeMode_{std::make_shared<ResumeInterviewMode>()};
+    std::shared_ptr<FollowUpGenerator> followUpGen_{std::make_shared<FollowUpGenerator>()};
+    std::shared_ptr<UsageTracker> usageTracker_{std::make_shared<UsageTracker>()};
+    std::shared_ptr<AnswerReviewer> answerReviewer_{std::make_shared<AnswerReviewer>()};
 
     // Admin workflows
     void showAdminDashboard();

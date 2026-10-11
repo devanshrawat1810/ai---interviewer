@@ -368,5 +368,123 @@ classDiagram
     RepositoryFactory ..> IUserRepository : Instantiates
     RepositoryFactory ..> IDailyChallengeRepository : Instantiates
     RepositoryFactory ..> IQuestionFeedbackRepository : Instantiates
+    RepositoryFactory ..> IAiUsageRepository : Instantiates
     RepositoryFactory ..> Database : Healthcheck
+
+    %% ==========================================
+    %% 9. Phase 4: AI & LLM Architecture
+    %% ==========================================
+    class IHttpTransport {
+        <<interface>>
+        +executePost(string, vector~string~, string, int)* HttpResponse
+    }
+    class HttpClient {
+        -shared_ptr~IHttpTransport~ transport_
+        -int maxRetries_
+        +post(string, vector~string~, string, int) HttpResponse
+        +maskApiKey(string)$ string
+    }
+    HttpClient ..> IHttpTransport : Uses
+
+    class ILLMClient {
+        <<interface>>
+        +complete(LLMRequest&)* LLMResponse
+        +getProviderName()* string
+    }
+    class OpenAICompatibleClient {
+        -shared_ptr~HttpClient~ http_
+        -string apiKey_
+        -string model_
+        -string baseUrl_
+        +complete(LLMRequest&) LLMResponse
+    }
+    class AnthropicClient {
+        -shared_ptr~HttpClient~ http_
+        -string apiKey_
+        -string model_
+        +complete(LLMRequest&) LLMResponse
+    }
+    class MockLLMClient {
+        -vector~LLMResponse~ scriptedResponses_
+        +complete(LLMRequest&) LLMResponse
+    }
+    class NullLLMClient {
+        +complete(LLMRequest&) LLMResponse
+    }
+    ILLMClient <|.. OpenAICompatibleClient : Implements
+    ILLMClient <|.. AnthropicClient : Implements
+    ILLMClient <|.. MockLLMClient : Implements
+    ILLMClient <|.. NullLLMClient : Implements
+
+    class LLMClientFactory {
+        <<factory>>
+        +createClient(string, string, string, string)$ shared_ptr~ILLMClient~
+        +createClientFromEnv()$ shared_ptr~ILLMClient~
+    }
+    LLMClientFactory ..> ILLMClient : Creates
+
+    class AIFeedback {
+        -shared_ptr~ILLMClient~ client_
+        -RuleBasedFeedback fallback_
+        +generateFeedback(InterviewSession&) FeedbackReport
+        +isConfigured() bool
+    }
+    FeedbackGenerator <|.. AIFeedback : Implements
+    AIFeedback --> ILLMClient : Injected
+    AIFeedback --> RuleBasedFeedback : Fallback
+
+    class FollowUpGenerator {
+        -shared_ptr~ILLMClient~ client_
+        +generateFollowUp(shared_ptr~Question~, string) shared_ptr~TextQuestion~
+    }
+    FollowUpGenerator --> ILLMClient : Injected
+
+    class ResumeAnalyzer {
+        -shared_ptr~ILLMClient~ client_
+        +analyzeResume(string, string) ResumeAnalysisResult
+    }
+    ResumeAnalyzer --> ILLMClient : Injected
+
+    class ResumeInterviewMode {
+        +validateResumeLength(string, string&)$ bool
+        +getPrivacyConsentNotice()$ string
+        +createResumeSession(string, ResumeAnalysisResult&) shared_ptr~InterviewSession~
+    }
+    ResumeInterviewMode ..> ResumeAnalyzer : Delegates
+
+    class AnswerReviewer {
+        -shared_ptr~ILLMClient~ client_
+        -shared_ptr~UsageTracker~ tracker_
+        +reviewAnswer(string, string, string) AnswerReviewResult
+    }
+    AnswerReviewer --> ILLMClient : Injected
+
+    class IAiUsageRepository {
+        <<interface>>
+        +getDailyUsage(string, string)* int
+        +recordUsage(string, string)* void
+        +getDailyReviews(string, string)* int
+        +recordReview(string, string)* void
+    }
+    class JsonAiUsageRepository {
+        +getDailyUsage(...) int
+    }
+    class MongoAiUsageRepository {
+        +getDailyUsage(...) int
+    }
+    IAiUsageRepository <|.. JsonAiUsageRepository : Implements
+    IAiUsageRepository <|.. MongoAiUsageRepository : Implements
+
+    class UsageTracker {
+        -shared_ptr~IAiUsageRepository~ repo_
+        -shared_ptr~IClock~ clock_
+        -int dailyLimit_
+        +canMakeAiCall(string) bool
+        +recordAiCall(string) void
+        +canReviewAnswer(string) bool
+        +recordReview(string) void
+    }
+    UsageTracker --> IAiUsageRepository : Persists
+    UsageTracker --> IClock : Time-aware
 ```
+

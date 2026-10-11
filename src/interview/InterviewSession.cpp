@@ -54,7 +54,7 @@ int InterviewSession::getWeightForDifficulty(Difficulty diff) {
 }
 
 std::shared_ptr<Question> InterviewSession::getNextQuestion() {
-    if (static_cast<int>(records_.size()) >= targetQuestionCount_) {
+    if (standardQuestionsAttempted_ >= targetQuestionCount_) {
         return nullptr;
     }
 
@@ -64,7 +64,7 @@ std::shared_ptr<Question> InterviewSession::getNextQuestion() {
         asked.push_back(rec.question);
     }
 
-    int nextQNum = static_cast<int>(records_.size()) + 1;
+    int nextQNum = standardQuestionsAttempted_ + 1;
     return strategy_->selectNextQuestion(nextQNum, questionPool_, asked, resultHistory_);
 }
 
@@ -94,11 +94,41 @@ bool InterviewSession::submitAnswer(std::shared_ptr<Question> question,
 
     records_.push_back(rec);
     resultHistory_.push_back(correct);
+    standardQuestionsAttempted_++;
 
-    if (static_cast<int>(records_.size()) >= targetQuestionCount_) {
+    if (standardQuestionsAttempted_ >= targetQuestionCount_) {
         finish();
     }
 
+    return correct;
+}
+
+bool InterviewSession::submitFollowUpAnswer(std::shared_ptr<Question> question,
+                                            const std::string& answer,
+                                            int timeTakenSeconds) {
+    if (!question) return false;
+
+    Difficulty diff = question->getDifficulty();
+    int limit = getTimeLimitForDifficulty(diff);
+    int fullWeight = getWeightForDifficulty(diff);
+    int halfPoints = std::max(1, fullWeight / 2);
+
+    bool correct = false;
+    if (timeTakenSeconds <= limit) {
+        correct = question->evaluate(answer);
+    }
+
+    SessionQuestionRecord rec;
+    rec.question = question;
+    rec.userResponse = answer;
+    rec.isCorrect = correct;
+    rec.timeTakenSeconds = timeTakenSeconds;
+    rec.timeLimitSeconds = limit;
+    rec.maxPoints = halfPoints;
+    rec.pointsEarned = correct ? halfPoints : 0;
+
+    records_.push_back(rec);
+    followUpsAsked_++;
     return correct;
 }
 

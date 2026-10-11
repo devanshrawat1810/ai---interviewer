@@ -56,6 +56,15 @@ if(mongocxx_FOUND AND bsoncxx_FOUND)
 else()
     message(WARNING "MongoDB C++ Driver not found. Building with stub/fallback mode for mongocxx headers.")
 endif()
+# Find libcurl
+find_package(CURL QUIET)
+if(CURL_FOUND)
+    message(STATUS "libcurl found!")
+    add_compile_definitions(AI_INTERVIEWER_HAS_CURL=1)
+    set(CURL_TARGETS CURL::libcurl)
+else()
+    message(WARNING "libcurl not found via CMake find_package. HttpClient will use mock/offline mode unless linked.")
+endif()
 
 # Core library source files
 set(CORE_SOURCES
@@ -85,9 +94,23 @@ set(CORE_SOURCES
     src/interview/StreakService.cpp
     src/interview/ReviewService.cpp
     src/interview/NotificationService.cpp
+    src/interview/ResumeInterviewMode.cpp
     src/feedback/FeedbackGenerator.cpp
     src/feedback/RuleBasedFeedback.cpp
     src/feedback/AIFeedback.cpp
+    src/ai/HttpClient.cpp
+    src/ai/AnthropicClient.cpp
+    src/ai/OpenAICompatibleClient.cpp
+    src/ai/MockLLMClient.cpp
+    src/ai/NullLLMClient.cpp
+    src/ai/LLMClientFactory.cpp
+    src/ai/PromptLibrary.cpp
+    src/ai/ResponseParser.cpp
+    src/ai/FollowUpGenerator.cpp
+    src/ai/ResumeAnalyzer.cpp
+    src/ai/AnswerReviewer.cpp
+    src/ai/UsageTracker.cpp
+    src/ai/ResponseCache.cpp
     src/db/Database.cpp
     src/db/UserMapper.cpp
     src/db/QuestionMapper.cpp
@@ -103,6 +126,7 @@ set(CORE_SOURCES
     src/db/JsonScoreboardRepository.cpp
     src/db/JsonDailyChallengeRepository.cpp
     src/db/JsonQuestionFeedbackRepository.cpp
+    src/db/JsonAiUsageRepository.cpp
     src/db/MongoUserRepository.cpp
     src/db/MongoQuestionRepository.cpp
     src/db/MongoAttemptRepository.cpp
@@ -111,13 +135,14 @@ set(CORE_SOURCES
     src/db/MongoScoreboardRepository.cpp
     src/db/MongoDailyChallengeRepository.cpp
     src/db/MongoQuestionFeedbackRepository.cpp
+    src/db/MongoAiUsageRepository.cpp
     src/db/RepositoryFactory.cpp
     src/ui/RankingStrategy.cpp
     src/ui/ConsoleUI.cpp
 )
 
 add_library(ai_interviewer_core STATIC ${CORE_SOURCES})
-target_link_libraries(ai_interviewer_core PUBLIC nlohmann_json::nlohmann_json ${MONGO_CXX_TARGETS})
+target_link_libraries(ai_interviewer_core PUBLIC nlohmann_json::nlohmann_json ${MONGO_CXX_TARGETS} ${CURL_TARGETS})
 
 # Main executable
 add_executable(ai_interviewer src/main.cpp)
@@ -142,6 +167,14 @@ add_executable(ai_interviewer_tests
     tests/test_admin.cpp
     tests/test_daily_challenge.cpp
     tests/test_streak.cpp
+    tests/test_http_client.cpp
+    tests/test_llm_clients.cpp
+    tests/test_response_parser.cpp
+    tests/test_ai_feedback.cpp
+    tests/test_followup.cpp
+    tests/test_prompt_injection.cpp
+    tests/test_resume_mode.cpp
+    tests/test_usage_tracker.cpp
 )
 target_link_libraries(ai_interviewer_tests PRIVATE
     ai_interviewer_core
@@ -150,3 +183,4 @@ target_link_libraries(ai_interviewer_tests PRIVATE
 
 include(GoogleTest)
 gtest_discover_tests(ai_interviewer_tests)
+

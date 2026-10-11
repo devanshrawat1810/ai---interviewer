@@ -158,23 +158,34 @@ void ConsoleUI::handleLogin() {
 }
 
 void ConsoleUI::showDashboard() {
+    bool aiEnabled = aiFeedback_->isConfigured();
+    std::string aiStatus = aiEnabled ? "Enabled (" + aiFeedback_->getProviderName() + ")" : "Disabled (set AI_API_KEY to enable)";
+    int aiRemaining = aiEnabled ? usageTracker_->getRemainingCalls(currentStudent_->getId()) : 0;
+
     std::cout << "\n================ STUDENT DASHBOARD ================\n";
     std::cout << " Candidate: " << currentStudent_->getName()
               << " | " << currentStudent_->getCollege() << " (" << currentStudent_->getBranch() << ")\n"
               << " Track: " << currentStudent_->getCourse()
               << " | Streak: " << currentStudent_->getStreak() << "d (Best: " << currentStudent_->getLongestStreak() << "d)"
               << " | Score: " << currentStudent_->getTotalScore() << " pts\n";
+    if (aiEnabled) {
+        std::cout << " AI Features: ON | Daily AI Quota Remaining: " << aiRemaining << "\n";
+    } else {
+        std::cout << " AI Features: " << aiStatus << "\n";
+    }
     std::cout << "---------------------------------------------------\n";
     std::cout << "[1] Start Mock Interview (10-question ramp)\n";
     std::cout << "[2] Start Practice Session (5-question adaptive)\n";
-    std::cout << "[3] Daily Challenge (+50 bonus points)\n";
-    std::cout << "[4] View Streak Calendar (Monthly Grid)\n";
-    std::cout << "[5] Coding Challenges Hub\n";
-    std::cout << "[6] Review Wrong Answers & Retry\n";
-    std::cout << "[7] Bookmarked Questions\n";
-    std::cout << "[8] Filtered Leaderboard & Subject Progress\n";
-    std::cout << "[9] View & Edit Profile / Badges\n";
-    std::cout << "[10] Logout\n";
+    std::cout << "[3] Resume-Based Interview" << (aiEnabled ? "" : " [AI Disabled]") << "\n";
+    std::cout << "[4] Daily Challenge (+50 bonus points)\n";
+    std::cout << "[5] View Streak Calendar (Monthly Grid)\n";
+    std::cout << "[6] Coding Challenges Hub\n";
+    std::cout << "[7] Review Wrong Answers & Retry\n";
+    std::cout << "[8] Answer Review Coaching (AI)" << (aiEnabled ? "" : " [AI Disabled]") << "\n";
+    std::cout << "[9] Bookmarked Questions\n";
+    std::cout << "[10] Filtered Leaderboard & Subject Progress\n";
+    std::cout << "[11] View & Edit Profile / Badges\n";
+    std::cout << "[12] Logout\n";
     std::cout << "Choose an action: ";
 
     int choice = 0;
@@ -190,27 +201,33 @@ void ConsoleUI::showDashboard() {
             handleTakeInterview();
             break;
         case 3:
-            handleDailyChallenge();
+            handleResumeInterview();
             break;
         case 4:
-            handleStreakCalendar();
+            handleDailyChallenge();
             break;
         case 5:
-            handleCodingChallenges();
+            handleStreakCalendar();
             break;
         case 6:
-            handleReviewWrongAnswers();
+            handleCodingChallenges();
             break;
         case 7:
-            handleBookmarkedQuestions();
+            handleReviewWrongAnswers();
             break;
         case 8:
-            handleViewLeaderboard();
+            handleAnswerReviewCoaching();
             break;
         case 9:
-            handleViewProfile();
+            handleBookmarkedQuestions();
             break;
         case 10:
+            handleViewLeaderboard();
+            break;
+        case 11:
+            handleViewProfile();
+            break;
+        case 12:
             std::cout << "Logging out...\n";
             currentUser_ = nullptr;
             currentStudent_ = nullptr;
@@ -220,6 +237,7 @@ void ConsoleUI::showDashboard() {
             break;
     }
 }
+
 
 void ConsoleUI::handleDailyChallenge() {
     std::string course = currentStudent_->getCourse();
@@ -401,14 +419,15 @@ void ConsoleUI::handleTakeInterview() {
     session->finish();
     streakService_.recordActivity(*currentStudent_);
 
-    RuleBasedFeedback ruleGen;
-    FeedbackReport report = ruleGen.generateFeedback(*session);
-    AIFeedback aiGen;
-    FeedbackReport aiReport = aiGen.generateFeedback(*session);
-    report.aiEvaluation = aiReport.aiEvaluation;
+    FeedbackReport report = aiFeedback_->generateFeedback(*session);
 
     std::cout << "\n=======================================================\n";
-    std::cout << "             INTERVIEW FEEDBACK REPORT                 \n";
+    std::cout << "             INTERVIEW FEEDBACK REPORT\n";
+    if (report.isAiGenerated) {
+        std::cout << " ** " << report.notice << " **\n";
+    } else if (!report.notice.empty()) {
+        std::cout << " " << report.notice << "\n";
+    }
     std::cout << "=======================================================\n";
     std::cout << "Final Score: " << report.totalScore << " / " << report.maxScore
               << " (" << std::fixed << std::setprecision(1) << report.percentage << "%)\n";
@@ -417,6 +436,22 @@ void ConsoleUI::handleTakeInterview() {
               << " | Hard " << report.scoreByDifficulty[Difficulty::HARD] << "/" << report.maxByDifficulty[Difficulty::HARD] << "\n";
     std::cout << "Strongest Topic: " << report.strongestTopic << "\n";
     std::cout << "Weakest Topic:   " << report.weakestTopic << "\n";
+
+    if (report.isAiGenerated) {
+        std::cout << "\nOverall Summary: " << report.overallSummary << "\n";
+        std::cout << "Communication Clarity: " << report.communicationClarity << "/5 | "
+                  << "Answer Structure: " << report.answerStructure << "/5 | "
+                  << "Confidence Cues: " << report.confidenceCues << "/5\n";
+        if (!report.strengths.empty()) {
+            std::cout << "\nStrengths:\n";
+            for (const auto& s : report.strengths) std::cout << "  [+] " << s << "\n";
+        }
+        if (!report.weaknesses.empty()) {
+            std::cout << "\nAreas to Improve:\n";
+            for (const auto& w : report.weaknesses) std::cout << "  [-] " << w << "\n";
+        }
+    }
+
     std::cout << "\nRecommendations:\n";
     for (const auto& sug : report.suggestions) {
         std::cout << "  * " << sug << "\n";
@@ -822,4 +857,183 @@ void ConsoleUI::handleAdminDifficultyDiscrepancies() {
     for (const auto& d : discs) {
         std::cout << "  * Question " << d.first << ": " << d.second << "\n";
     }
+}
+
+// Phase 4: Resume-Based Interview Handler
+void ConsoleUI::handleResumeInterview() {
+    if (!aiFeedback_->isConfigured()) {
+        std::cout << "\n[!] AI Features are disabled. Set AI_API_KEY, AI_PROVIDER, and AI_MODEL environment variables to enable resume-based interviews.\n";
+        return;
+    }
+
+    if (!usageTracker_->canMakeAiCall(currentStudent_->getId())) {
+        std::cout << "\n[!] Daily AI quota exceeded. Please try again tomorrow.\n";
+        return;
+    }
+
+    // Display privacy consent notice
+    std::cout << "\n" << ResumeInterviewMode::getPrivacyConsentNotice() << "\n";
+    std::cout << "\nDo you consent to proceeding? [yes/no]: ";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::string consent;
+    std::getline(std::cin, consent);
+    if (consent != "yes" && consent != "y" && consent != "YES") {
+        std::cout << "Resume interview cancelled.\n";
+        return;
+    }
+
+    std::cout << "\nChoose resume input method:\n";
+    std::cout << "[1] Paste resume text directly\n";
+    std::cout << "[2] Enter path to a .txt resume file\n";
+    std::cout << "Choice: ";
+    int method = 0;
+    std::cin >> method;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::string resumeText;
+    std::string errorMsg;
+
+    if (method == 2) {
+        std::cout << "Enter file path: ";
+        std::string path;
+        std::getline(std::cin, path);
+        resumeText = ResumeInterviewMode::loadResumeFile(path, errorMsg);
+        if (resumeText.empty()) {
+            std::cout << "[!] Error: " << errorMsg << "\n";
+            return;
+        }
+    } else {
+        std::cout << "Paste your resume text (max 6000 characters) and press Enter twice when done:\n";
+        std::string line;
+        while (std::getline(std::cin, line)) {
+            if (line.empty()) break;
+            resumeText += line + "\n";
+            if (resumeText.size() > 6100) break;
+        }
+        if (!ResumeInterviewMode::validateResumeLength(resumeText, errorMsg)) {
+            std::cout << "[!] Error: " << errorMsg << "\n";
+            return;
+        }
+    }
+
+    std::cout << "\n[...] Analyzing your resume with AI (this may take a moment)...\n";
+    ResumeAnalyzer analyzer;
+    ResumeAnalysisResult result = analyzer.analyzeResume(resumeText, currentStudent_->getCourse());
+
+    if (!result.success) {
+        std::cout << "[!] Resume analysis failed: " << result.errorMessage << "\n";
+        return;
+    }
+
+    // Show extracted summary and get confirmation
+    std::cout << "\n=== EXTRACTED PROFILE SUMMARY ===\n";
+    std::cout << "Experience: " << result.experienceSummary << "\n";
+    std::cout << "Skills: ";
+    for (size_t i = 0; i < result.extractedSkills.size() && i < 8; i++) {
+        std::cout << result.extractedSkills[i] << (i + 1 < result.extractedSkills.size() ? ", " : "");
+    }
+    std::cout << "\nProjects: ";
+    for (size_t i = 0; i < result.extractedProjects.size() && i < 4; i++) {
+        std::cout << result.extractedProjects[i] << (i + 1 < result.extractedProjects.size() ? ", " : "");
+    }
+    std::cout << "\n" << result.generatedQuestions.size() << " tailored questions generated.\n";
+    std::cout << "\nDo you want to start the resume-based interview? [yes/no]: ";
+    std::string confirm;
+    std::getline(std::cin, confirm);
+    if (confirm != "yes" && confirm != "y" && confirm != "YES") {
+        std::cout << "Interview cancelled.\n";
+        return;
+    }
+
+    usageTracker_->recordAiCall(currentStudent_->getId());
+
+    auto session = resumeMode_->createResumeSession(currentStudent_->getId(), result);
+    session->start();
+
+    std::cout << "\n=======================================================\n";
+    std::cout << "         RESUME-BASED INTERVIEW SESSION\n";
+    std::cout << " Questions drawn from YOUR projects and skills.\n";
+    std::cout << "=======================================================\n";
+
+    while (!session->isCompleted()) {
+        auto q = session->getNextQuestion();
+        if (!q) break;
+
+        int qNum = session->getStandardQuestionsAttempted() + 1;
+        std::cout << "\n--- Question #" << qNum << " --- [" << q->getTopic() << "] " << difficultyToString(q->getDifficulty()) << "\n";
+        q->display();
+
+        int limit = InterviewSession::getTimeLimitForDifficulty(q->getDifficulty());
+        std::cout << "\n[Time Limit: " << limit << "s]\nYour answer: ";
+        auto t0 = std::chrono::steady_clock::now();
+        std::string response;
+        std::getline(std::cin, response);
+        int elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::steady_clock::now() - t0).count());
+
+        bool correct = session->submitAnswer(q, response, elapsed);
+        std::cout << (correct ? "[+] Good answer!\n" : "[-] " + q->getExplanation() + "\n");
+    }
+
+    session->finish();
+    streakService_.recordActivity(*currentStudent_);
+
+    FeedbackReport report = aiFeedback_->generateFeedback(*session);
+    std::cout << "\n=======================================================\n";
+    std::cout << "          RESUME INTERVIEW FEEDBACK REPORT\n";
+    if (!report.notice.empty()) std::cout << " " << report.notice << "\n";
+    std::cout << "=======================================================\n";
+    std::cout << "Score: " << report.totalScore << "/" << report.maxScore
+              << " (" << std::fixed << std::setprecision(1) << report.percentage << "%)\n";
+    if (report.isAiGenerated && !report.overallSummary.empty()) {
+        std::cout << "\nSummary: " << report.overallSummary << "\n";
+    }
+    std::cout << "\nRecommendations:\n";
+    for (const auto& s : report.suggestions) std::cout << "  * " << s << "\n";
+    std::cout << "=======================================================\n";
+}
+
+// Phase 4: Answer Review Coaching Handler
+void ConsoleUI::handleAnswerReviewCoaching() {
+    if (!answerReviewer_->isAvailable()) {
+        std::cout << "\n[!] AI Answer Review requires an AI API key. Set AI_API_KEY environment variable.\n";
+        return;
+    }
+
+    int remaining = usageTracker_->getRemainingReviews(currentStudent_->getId());
+    if (remaining <= 0) {
+        std::cout << "\n[!] Daily review limit reached (5 reviews/day). Try again tomorrow.\n";
+        return;
+    }
+    std::cout << "\n=== ANSWER REVIEW COACHING === (" << remaining << " reviews remaining today)\n";
+    std::cout << "Type the question you want to practice:\n> ";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::string questionText;
+    std::getline(std::cin, questionText);
+
+    std::cout << "Type your answer:\n> ";
+    std::string studentAnswer;
+    std::getline(std::cin, studentAnswer);
+
+    std::cout << "\n[...] Reviewing your answer with AI...\n";
+    auto result = answerReviewer_->reviewAnswer(currentStudent_->getId(), questionText, studentAnswer);
+
+    if (!result.success) {
+        std::cout << "[!] Review failed: " << result.errorMessage << "\n";
+        return;
+    }
+
+    std::cout << "\n--- AI COACHING FEEDBACK ---\n";
+    std::cout << "Rating: " << result.rating << "/5\n";
+    std::cout << "Feedback: " << result.feedback << "\n";
+    if (!result.strengths.empty()) {
+        std::cout << "\nStrengths:\n";
+        for (const auto& s : result.strengths) std::cout << "  [+] " << s << "\n";
+    }
+    if (!result.improvements.empty()) {
+        std::cout << "\nImprovements:\n";
+        for (const auto& i : result.improvements) std::cout << "  [-] " << i << "\n";
+    }
+    std::cout << "\nImproved Model Answer:\n" << result.improvedAnswer << "\n";
+    std::cout << "-----------------------------\n";
 }

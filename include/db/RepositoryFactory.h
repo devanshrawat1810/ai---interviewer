@@ -10,6 +10,7 @@
 #include "db/IScoreboardRepository.h"
 #include "db/IDailyChallengeRepository.h"
 #include "db/IQuestionFeedbackRepository.h"
+#include "db/IAiUsageRepository.h"
 
 // Aggregated container of repository dependencies injected across the system
 struct RepositoryBundle {
@@ -21,6 +22,7 @@ struct RepositoryBundle {
     std::unique_ptr<IScoreboardRepository> scoreboardRepo;
     std::unique_ptr<IDailyChallengeRepository> dailyRepo;
     std::unique_ptr<IQuestionFeedbackRepository> questionFeedbackRepo;
+    std::unique_ptr<IAiUsageRepository> aiUsageRepo;
     std::string activeBackend; // "mongo" or "json"
 };
 
@@ -39,6 +41,7 @@ public:
     static std::unique_ptr<IScoreboardRepository> createScoreboardRepository(const std::string& backend = "");
     static std::unique_ptr<IDailyChallengeRepository> createDailyChallengeRepository(const std::string& backend = "");
     static std::unique_ptr<IQuestionFeedbackRepository> createQuestionFeedbackRepository(const std::string& backend = "");
+    static std::unique_ptr<IAiUsageRepository> createAiUsageRepository(const std::string& backend = "");
 
     static std::string resolveBackend(const std::string& preferred);
 };

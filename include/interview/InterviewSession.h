@@ -37,6 +37,12 @@ private:
     std::chrono::system_clock::time_point endTime_;
     bool isCompleted_{false};
 
+    // Phase 4: Follow-up question state
+    bool enableFollowUps_{false};
+    int followUpsAsked_{0};
+    int standardQuestionsAttempted_{0};
+    std::shared_ptr<Question> pendingFollowUp_{nullptr};
+
 public:
     InterviewSession(std::string id,
                      std::string userId,
@@ -67,6 +73,22 @@ public:
                       const std::string& answer,
                       int timeTakenSeconds);
 
+    // Phase 4: Dynamic Follow-Up Questions
+    void setEnableFollowUps(bool enable) noexcept { enableFollowUps_ = enable; }
+    bool getEnableFollowUps() const noexcept { return enableFollowUps_; }
+    int getFollowUpsAsked() const noexcept { return followUpsAsked_; }
+    bool canAskFollowUp() const noexcept { return enableFollowUps_ && followUpsAsked_ < 3; }
+    void setPendingFollowUp(std::shared_ptr<Question> followUp) { pendingFollowUp_ = std::move(followUp); }
+    bool hasPendingFollowUp() const noexcept { return pendingFollowUp_ != nullptr; }
+    std::shared_ptr<Question> popPendingFollowUp() {
+        auto q = pendingFollowUp_;
+        pendingFollowUp_ = nullptr;
+        return q;
+    }
+    bool submitFollowUpAnswer(std::shared_ptr<Question> question,
+                              const std::string& answer,
+                              int timeTakenSeconds);
+
     // Summary statistics
     const std::string& getId() const noexcept;
     const std::string& getUserId() const noexcept;
@@ -76,7 +98,9 @@ public:
     int getMaxPossibleScore() const noexcept;
     int getCorrectCount() const noexcept;
     int getQuestionsAttempted() const noexcept;
+    int getStandardQuestionsAttempted() const noexcept { return standardQuestionsAttempted_; }
     int getTargetQuestionCount() const noexcept;
     bool isCompleted() const noexcept;
     const std::vector<SessionQuestionRecord>& getRecords() const noexcept;
 };
+
