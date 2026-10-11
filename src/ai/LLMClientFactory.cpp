@@ -26,6 +26,20 @@ static std::string getEnvVar(const char* name, const std::string& defaultValue =
 }
 
 std::shared_ptr<ILLMClient> LLMClientFactory::createClientFromEnv() {
+    std::string demoMode = getEnvVar("DEMO_MODE", "0");
+    if (demoMode == "1" || demoMode == "true" || demoMode == "TRUE") {
+        std::string cannedFeedback = R"({
+            "overall_summary": "[DEMO MODE] Excellent command of Object-Oriented principles, clean algorithmic structure, and clear communication.",
+            "strengths": ["Quick recall of polymorphism and inheritance", "Clean code organization and modular thinking"],
+            "weaknesses": ["Could elaborate more on edge case handling in concurrent scenarios"],
+            "communication_clarity": 5,
+            "answer_structure": 5,
+            "confidence_cues": 4,
+            "suggestions": ["Review memory models in C++20", "Practice more complex graph algorithms", "Keep up your daily consistency!"]
+        })";
+        return std::make_shared<MockLLMClient>(cannedFeedback);
+    }
+
     std::string provider = getEnvVar("AI_PROVIDER", "openai");
     std::string apiKey = getEnvVar("AI_API_KEY", "");
     std::string model = getEnvVar("AI_MODEL", "");

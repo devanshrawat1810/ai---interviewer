@@ -1,6 +1,24 @@
-# AI Interviewer (C++17 Console Application)
+# AI Interviewer: C++17 Placement Simulation & Coding Platform
 
-An Object-Oriented C++17 mock interview simulation and coding practice platform designed for college placement preparation. Features progressive difficulty interview sessions, gamified daily streaks and badges, automated coding challenge evaluations with timeouts, an administrative governance panel, and an interchangeable repository layer supporting **MongoDB** and **JSON file persistence**.
+[![CI Quality Pipeline](https://github.com/example/ai-interviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/example/ai-interviewer/actions)
+[![Release Packaging](https://github.com/example/ai-interviewer/actions/workflows/release.yml/badge.svg)](https://github.com/example/ai-interviewer/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![C++17](https://img.shields.io/badge/Standard-C%2B%2B17-orange.svg)](CMakeLists.txt)
+[![Tests: 20 Suites](https://img.shields.io/badge/Google%20Test-20%20Suites-brightgreen.svg)](tests/)
+
+An Object-Oriented C++17 mock interview simulation and coding practice platform designed for college placement preparation. Features progressive difficulty interview sessions, gamified daily streaks and badges, automated coding challenge evaluations with timeouts, an administrative governance panel, an interchangeable repository layer supporting **MongoDB** and **JSON file persistence**, and a provider-neutral AI layer with 100% offline fallback.
+
+> **Academic & Viva Reference**:
+> - [The Viva Sheet (OOP Concepts & Design Patterns)](docs/OOP_MAP.md)
+> - [Comprehensive Viva Q&A (40 Technical Questions)](docs/VIVA_QA.md)
+> - [System Architecture & Layering Specs](docs/ARCHITECTURE.md)
+> - [UML Class & Sequence Diagrams](docs/UML.md)
+> - [Live Demonstration & Presentation Guide](docs/DEMO.md)
+> - [Testing Strategy & Test Double Matrix](docs/TESTING.md)
+> - [Security Model & Sandboxing Notes](docs/SECURITY.md)
+> - [Formal College Project Report Skeleton](docs/REPORT.md)
+> - [12-Slide Final Presentation Outline](docs/PRESENTATION.md)
+
 
 ---
 

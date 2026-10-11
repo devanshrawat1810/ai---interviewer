@@ -163,6 +163,10 @@ void ConsoleUI::showDashboard() {
     int aiRemaining = aiEnabled ? usageTracker_->getRemainingCalls(currentStudent_->getId()) : 0;
 
     std::cout << "\n================ STUDENT DASHBOARD ================\n";
+    const char* demoEnv = std::getenv("DEMO_MODE");
+    if (demoEnv && (std::string(demoEnv) == "1" || std::string(demoEnv) == "true")) {
+        std::cout << " [*** DEMO MODE ACTIVE - Offline LLM Emulation ***]\n";
+    }
     std::cout << " Candidate: " << currentStudent_->getName()
               << " | " << currentStudent_->getCollege() << " (" << currentStudent_->getBranch() << ")\n"
               << " Track: " << currentStudent_->getCourse()
