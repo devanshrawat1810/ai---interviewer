@@ -59,10 +59,7 @@ std::shared_ptr<User> UserMapper::fromJson(const nlohmann::json& j) {
     std::string lastActive = j.value("lastActiveDate", "");
 
     if (role == "admin") {
-        auto admin = std::make_shared<Admin>(id, name, email, passwordHash, salt, course, streak, lastActive);
-        admin->setCollege(college);
-        admin->setBranch(branch);
-        admin->setLongestStreak(longestStreak);
+        auto admin = std::make_shared<Admin>(id, name, email, passwordHash, salt, course, college, branch, streak, longestStreak, lastActive);
         return admin;
     }
 
@@ -164,10 +161,7 @@ std::shared_ptr<User> UserMapper::fromBson(const bsoncxx::document::view& doc) {
     std::string lastActive = doc["lastActive"] ? doc["lastActive"].get_string().value.to_string() : "";
 
     if (role == "admin") {
-        auto admin = std::make_shared<Admin>(id, name, email, passwordHash, salt, course, streak, lastActive);
-        admin->setCollege(college);
-        admin->setBranch(branch);
-        admin->setLongestStreak(longestStreak);
+        auto admin = std::make_shared<Admin>(id, name, email, passwordHash, salt, course, college, branch, streak, longestStreak, lastActive);
         return admin;
     }
 

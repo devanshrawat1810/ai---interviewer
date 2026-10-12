@@ -144,7 +144,11 @@ set(CORE_SOURCES
 add_library(ai_interviewer_core STATIC ${CORE_SOURCES})
 target_link_libraries(ai_interviewer_core PUBLIC nlohmann_json::nlohmann_json ${MONGO_CXX_TARGETS} ${CURL_TARGETS})
 
-# Main executable
+# Console Application executable
+add_executable(ai_interviewer_console src/main.cpp)
+target_link_libraries(ai_interviewer_console PRIVATE ai_interviewer_core)
+
+# Compatibility alias for earlier scripts
 add_executable(ai_interviewer src/main.cpp)
 target_link_libraries(ai_interviewer PRIVATE ai_interviewer_core)
 
@@ -152,7 +156,113 @@ target_link_libraries(ai_interviewer PRIVATE ai_interviewer_core)
 add_executable(seed_db tools/seed_db.cpp)
 target_link_libraries(seed_db PRIVATE ai_interviewer_core)
 
-# Unit & Integration Tests
+# Option to build Qt 6 Desktop GUI
+option(BUILD_GUI "Build Qt 6 Desktop GUI front-end" ON)
+
+if(BUILD_GUI)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC OFF)
+    set(CMAKE_AUTORCC ON)
+
+    find_package(Qt6 COMPONENTS Widgets Concurrent Test QUIET)
+
+    if(Qt6_FOUND)
+        message(STATUS "Qt 6 found! Configuring ai_interviewer_gui and gui tests.")
+
+        set(GUI_HEADERS
+            include/gui/Result.h
+            include/gui/ThemeTokens.h
+            include/gui/ThemeManager.h
+            include/gui/ErrorTranslator.h
+            include/gui/ServiceContext.h
+            include/gui/Navigator.h
+            include/gui/widgets/PrimaryButton.h
+            include/gui/widgets/Card.h
+            include/gui/widgets/FormField.h
+            include/gui/widgets/PasswordField.h
+            include/gui/widgets/DifficultyBadge.h
+            include/gui/widgets/ProgressRing.h
+            include/gui/widgets/ChartWidget.h
+            include/gui/widgets/CppSyntaxHighlighter.h
+            include/gui/widgets/QuestionViewFactory.h
+            include/gui/widgets/MCQQuestionWidget.h
+            include/gui/widgets/TextQuestionWidget.h
+            include/gui/widgets/CodingQuestionWidget.h
+            include/gui/presenters/LoginPresenter.h
+            include/gui/presenters/DashboardPresenter.h
+            include/gui/presenters/CourseSelectPresenter.h
+            include/gui/presenters/InterviewPresenter.h
+            include/gui/views/LoginView.h
+            include/gui/views/DashboardView.h
+            include/gui/views/CourseSelectView.h
+            include/gui/views/InterviewView.h
+            include/gui/views/FeedbackView.h
+            include/gui/views/ProfileView.h
+            include/gui/views/LeaderboardView.h
+            include/gui/views/AdminView.h
+            include/gui/views/ResumeView.h
+            include/gui/views/MainWindow.h
+        )
+
+        set(GUI_SOURCES
+            ${GUI_HEADERS}
+            src/gui/ErrorTranslator.cpp
+            src/gui/ThemeManager.cpp
+            src/gui/ServiceContext.cpp
+            src/gui/Navigator.cpp
+            src/gui/widgets/PrimaryButton.cpp
+            src/gui/widgets/Card.cpp
+            src/gui/widgets/FormField.cpp
+            src/gui/widgets/PasswordField.cpp
+            src/gui/widgets/DifficultyBadge.cpp
+            src/gui/widgets/ProgressRing.cpp
+            src/gui/widgets/ChartWidget.cpp
+            src/gui/widgets/CppSyntaxHighlighter.cpp
+            src/gui/widgets/MCQQuestionWidget.cpp
+            src/gui/widgets/TextQuestionWidget.cpp
+            src/gui/widgets/CodingQuestionWidget.cpp
+            src/gui/widgets/QuestionViewFactory.cpp
+            src/gui/presenters/LoginPresenter.cpp
+            src/gui/presenters/DashboardPresenter.cpp
+            src/gui/presenters/CourseSelectPresenter.cpp
+            src/gui/presenters/InterviewPresenter.cpp
+            src/gui/views/LoginView.cpp
+            src/gui/views/DashboardView.cpp
+            src/gui/views/CourseSelectView.cpp
+            src/gui/views/InterviewView.cpp
+            src/gui/views/FeedbackView.cpp
+            src/gui/views/ProfileView.cpp
+            src/gui/views/LeaderboardView.cpp
+            src/gui/views/AdminView.cpp
+            src/gui/views/ResumeView.cpp
+            src/gui/views/MainWindow.cpp
+        )
+
+        add_executable(ai_interviewer_gui src/gui/main_gui.cpp ${GUI_SOURCES})
+        target_link_libraries(ai_interviewer_gui PRIVATE
+            ai_interviewer_core
+            Qt6::Widgets
+            Qt6::Concurrent
+        )
+
+        # Qt Test executable
+        add_executable(ai_interviewer_gui_tests
+            tests/test_gui_presenters.cpp
+            ${GUI_SOURCES}
+        )
+        target_link_libraries(ai_interviewer_gui_tests PRIVATE
+            ai_interviewer_core
+            Qt6::Widgets
+            Qt6::Concurrent
+            Qt6::Test
+        )
+        add_test(NAME ai_interviewer_gui_tests COMMAND ai_interviewer_gui_tests)
+    else()
+        message(WARNING "Qt 6 not found via find_package. Set CMAKE_PREFIX_PATH to Qt installation to build GUI.")
+    endif()
+endif()
+
+# Unit & Integration Tests (Google Test)
 enable_testing()
 add_executable(ai_interviewer_tests
     tests/test_auth.cpp
@@ -183,4 +293,5 @@ target_link_libraries(ai_interviewer_tests PRIVATE
 
 include(GoogleTest)
 gtest_discover_tests(ai_interviewer_tests)
+
 

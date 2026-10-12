@@ -49,10 +49,28 @@ cmake --build build --config Release
 
 ### Run
 ```bash
-# Run the application
-./build/ai_interviewer         # Linux/macOS
-.\build\Release\ai_interviewer.exe # Windows MSVC
+# Run the Console application
+./build/ai_interviewer_console         # Linux/macOS
+.\build\Release\ai_interviewer_console.exe # Windows MSVC
 ```
+
+### Option C: Running the Qt 6 Desktop GUI (`ai_interviewer_gui`)
+The project features a modern native Qt 6 desktop frontend implemented via Model-View-Presenter (MVP).
+- **Prerequisite**: Qt 6.5+ (Widgets, Concurrent, Test). (Do NOT install via vcpkg; use the official Qt Online Installer or distro package manager `qt6-base-dev`).
+- **Configure & Build GUI**:
+```bash
+# Windows MinGW / Ninja Example:
+cmake -B build_gui -S . -G "Ninja" -DBUILD_GUI=ON -DCMAKE_PREFIX_PATH="C:/Qt/6.11.2/mingw_64"
+cmake --build build_gui --target ai_interviewer_gui ai_interviewer_gui_tests
+
+# Run Qt GUI Tests (Headless):
+$env:QT_QPA_PLATFORM="offscreen"
+.\build_gui\ai_interviewer_gui_tests.exe
+
+# Launch GUI Desktop App:
+.\build_gui\ai_interviewer_gui.exe
+```
+> **Deployment (Windows)**: Run `windeployqt.exe .\build_gui\ai_interviewer_gui.exe` to package all required Qt DLLs and plugins for standalone distribution.
 
 ---
 

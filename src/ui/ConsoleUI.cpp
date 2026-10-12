@@ -6,6 +6,7 @@
 #include "core/BadgeRule.h"
 #include "core/MCQQuestion.h"
 #include "core/TextQuestion.h"
+#include "core/CodingQuestion.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>

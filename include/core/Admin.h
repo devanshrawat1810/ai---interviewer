@@ -12,7 +12,10 @@ public:
           std::string passwordHash,
           std::string salt,
           std::string course = "ADMIN",
+          std::string college = "Administration",
+          std::string branch = "Staff",
           int streak = 0,
+          int longestStreak = 0,
           std::string lastActiveDate = "");
 
     ~Admin() override = default;

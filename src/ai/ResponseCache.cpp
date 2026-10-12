@@ -3,7 +3,7 @@
 
 std::string ResponseCache::hashRequest(const LLMRequest& request) {
     std::string composite = request.systemPrompt + "|||" + request.userMessage;
-    return Sha256::hash(composite);
+    return crypto::sha256(composite);
 }
 
 std::optional<LLMResponse> ResponseCache::get(const std::string& key) const {
