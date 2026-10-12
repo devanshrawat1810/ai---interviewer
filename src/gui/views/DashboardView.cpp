@@ -134,13 +134,14 @@ void DashboardView::setupUi() {
 
     actionsGrid->addWidget(makeActionBtn("🚀 Full Mock Interview", "10 questions with progressive ramp (Easy -> Hard)", &DashboardView::startInterviewClicked), 0, 0);
     actionsGrid->addWidget(makeActionBtn("⚡ Adaptive Practice Session", "5 questions adapting dynamically to your answers", &DashboardView::startPracticeClicked), 0, 1);
-    actionsGrid->addWidget(makeActionBtn("📄 Resume-Based Interview", "Tailored questions drawn from your uploaded resume", &DashboardView::resumeInterviewClicked), 1, 0);
-    actionsGrid->addWidget(makeActionBtn("📊 Campus Leaderboard", "Compare rank globally, by college, or by branch", &DashboardView::leaderboardClicked), 1, 1);
-    actionsGrid->addWidget(makeActionBtn("👤 Student Profile & Calendar", "View streak calendar, statistics, and unlocked badges", &DashboardView::profileClicked), 2, 0);
+    actionsGrid->addWidget(makeActionBtn("📚 Curriculum & Subject Tracks", "Explore subjects, topics, and practice questions", &DashboardView::browseCoursesClicked), 1, 0);
+    actionsGrid->addWidget(makeActionBtn("📄 Resume-Based Interview", "Tailored questions drawn from your uploaded resume", &DashboardView::resumeInterviewClicked), 1, 1);
+    actionsGrid->addWidget(makeActionBtn("📊 Campus Leaderboard", "Compare rank globally, by college, or by branch", &DashboardView::leaderboardClicked), 2, 0);
+    actionsGrid->addWidget(makeActionBtn("👤 Student Profile & Calendar", "View streak calendar, statistics, and unlocked badges", &DashboardView::profileClicked), 2, 1);
 
     adminBtn_ = makeActionBtn("⚙️ Admin Governance Panel", "Manage curriculum questions and view system telemetry", &DashboardView::adminPanelClicked);
     adminBtn_->setVisible(false);
-    actionsGrid->addWidget(adminBtn_, 2, 1);
+    actionsGrid->addWidget(adminBtn_, 3, 0, 1, 2);
 
     rootLayout->addLayout(actionsGrid);
     rootLayout->addStretch();

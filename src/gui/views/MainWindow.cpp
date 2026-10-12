@@ -108,6 +108,39 @@ void MainWindow::setupNavigation() {
         }
     });
 
+    connect(dashboardView, &DashboardView::browseCoursesClicked, this, [this, courseView]() {
+        auto student = navigator_->currentStudent();
+        if (student) {
+            courseSelectPresenter_->loadCourseData(
+                QString::fromStdString(student->getCourse()),
+                QString::fromStdString(student->getId()));
+        } else {
+            courseSelectPresenter_->loadCourseData("CSE", "");
+        }
+        navigator_->navigateTo("course");
+    });
+
+    connect(courseView, &CourseSelectView::subjectSelected, this, [this](const QString& subject, const QString& mode) {
+        auto student = navigator_->currentStudent();
+        std::string uid = student ? student->getId() : "guest_user";
+        auto pool = ctx_->questionRepo->getAll();
+        SessionType type = (mode == "mock") ? SessionType::MOCK : SessionType::PRACTICE;
+        auto session = SessionFactory::createSession(type, uid, subject.toStdString(), pool);
+        interviewPresenter_->startSession(std::shared_ptr<InterviewSession>(std::move(session)));
+        navigator_->navigateTo("interview");
+    });
+
+    connect(profileView, &ProfileView::profileUpdated, this, [this](const QString& college, const QString& branch) {
+        auto student = navigator_->currentStudent();
+        if (student) {
+            // Update student credentials in user repository
+            student->setCollege(college.toStdString());
+            student->setBranch(branch.toStdString());
+            ctx_->userRepo->save(*student);
+            QMessageBox::information(this, "Profile Saved", "Your college and department details have been updated successfully!");
+        }
+    });
+
     connect(dashboardView, &DashboardView::leaderboardClicked, this, [this, leaderboardView]() {
         auto user = navigator_->currentUser();
         leaderboardView->refreshData(user ? QString::fromStdString(user->getId()) : "");

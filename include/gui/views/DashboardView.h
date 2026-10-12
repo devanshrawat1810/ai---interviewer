@@ -26,6 +26,7 @@ signals:
     void startPracticeClicked();
     void resumeInterviewClicked();
     void dailyChallengeClicked();
+    void browseCoursesClicked();
     void leaderboardClicked();
     void profileClicked();
     void adminPanelClicked();
