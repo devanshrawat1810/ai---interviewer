@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Interviewer — Placement Preparation & Mock Simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --primary-light: #EEF2FF;
+      --accent: #0D9488;
+      --accent-light: #CCFBF1;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-sec: #64748B;
+      --success: #16A34A;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0F172A;
+      --surface: #1E293B;
+      --border: #334155;
+      --text: #F8FAFC;
+      --text-sec: #94A3B8;
+      --primary-light: rgba(79, 70, 229, 0.15);
+      --accent-light: rgba(13, 148, 136, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-sec);
+      font-weight: 500;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover {
+      background-color: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* Layout */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Badges & Chips */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-easy { background: #DCFCE7; color: #15803D; }
+    .badge-medium { background: #FEF3C7; color: #B45309; }
+    .badge-hard { background: #FEE2E2; color: #B91C1C; }
+
+    /* Hero Banner */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+    .hero-main {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--text-sec);
+      margin-bottom: 24px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .stat-info .stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .stat-info .stat-lbl {
+      font-size: 13px;
+      color: var(--text-sec);
+      margin-top: 4px;
+    }
+
+    /* Filters Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-select, .search-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .filter-select:focus, .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    .search-input { min-width: 260px; }
+
+    /* Question Cards List */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .q-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .q-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .q-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .q-track {
+      font-size: 12px;
+      color: var(--text-sec);
+      font-weight: 600;
+    }
+    .q-text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .q-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    @media (min-width: 640px) {
+      .q-options { grid-template-columns: 1fr 1fr; }
+    }
+    .opt-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+    }
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .opt-btn.correct {
+      background: #DCFCE7 !important;
+      border-color: #22C55E !important;
+      color: #15803D !important;
+      font-weight: 600;
+    }
+    .opt-btn.incorrect {
+      background: #FEE2E2 !important;
+      border-color: #EF4444 !important;
+      color: #B91C1C !important;
+      font-weight: 600;
+    }
+    .opt-key {
+      display: inline-flex;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.06);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .q-explanation {
+      margin-top: 16px;
+      padding: 14px;
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text);
+      display: none;
+      line-height: 1.5;
+    }
+    .q-explanation.visible { display: block; }
+
+    /* Interactive Simulation Mode Modal */
+    .sim-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .sim-modal.active { display: flex; }
+    .sim-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-sec);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <div class="brand-logo">AI</div>
+        <div>
+          <div class="brand-title">AI Interviewer</div>
+          <div class="brand-subtitle">Standalone Web Edition • 310 Questions</div>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <button id="themeToggle" class="btn btn-outline btn-sm">🌙 Theme</button>
+        <button id="startSimBtn" class="btn btn-primary btn-sm">⚡ Start Mock Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main>
+    <!-- Hero Header -->
+    <div class="hero">
+      <div class="hero-main">
+        <h1 class="hero-title">Practice 310 Curated Placement & Interview Questions</h1>
+        <p class="hero-subtitle">
+          Interactive zero-dependency client: Instant offline verification, dynamic topic tracks, difficulty ramps, and detailed engineering explanations.
+        </p>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
+        <div style="font-size:13px; color:var(--text-sec); font-weight:600; margin-bottom:8px;">INTERVIEW READINESS</div>
+        <div style="display:flex; align-items:baseline; gap:8px;">
+          <span id="scoreDisplay" style="font-size:36px; font-weight:800; color:var(--primary);">0</span>
+          <span style="font-size:14px; color:var(--text-sec);">/ 310 Solved</span>
+        </div>
+        <div style="background:var(--border); height:8px; border-radius:4px; overflow:hidden; margin-top:12px;">
+          <div id="progressBar" style="background:linear-gradient(90deg, var(--primary), var(--accent)); width:0%; height:100%; transition:width 0.3s ease;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Metric Row -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-info">
+          <div class="stat-val" id="totalQuestionsStat">310</div>
+          <div class="stat-lbl">Total Questions Available</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--accent-light); color:var(--accent);">🎯</div>
+        <div class="stat-info">
+          <div class="stat-val" id="accuracyStat">100%</div>
+          <div class="stat-lbl">Session Accuracy Rate</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#DCFCE7; color:#15803D;">🔥</div>
+        <div class="stat-info">
+          <div class="stat-val" id="streakStat">0</div>
+          <div class="stat-lbl">Consecutive Correct Streak</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters and Search Toolbar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search question text, topic, keyword..." />
+        <select id="courseFilter" class="filter-select">
+          <option value="ALL">All Curriculum Tracks</option>
+          <option value="CSE">CSE (Computer Science)</option>
+          <option value="ECE">ECE (Electronics & Embedded)</option>
+          <option value="COMMERCE">Commerce & Accounting</option>
+          <option value="COMMON">Common (Aptitude & HR)</option>
+        </select>
+        <select id="diffFilter" class="filter-select">
+          <option value="ALL">All Difficulties</option>
+          <option value="EASY">Easy</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HARD">Hard</option>
+        </select>
+      </div>
+      <div id="countSummary" style="font-size:13px; color:var(--text-sec); font-weight:600;">
+        Showing 310 questions
+      </div>
+    </div>
+
+    <!-- Questions Feed -->
+    <div id="questionsContainer" class="questions-list">
+      <div style="text-align:center; padding:40px; color:var(--text-sec);">Loading question catalog...</div>
+    </div>
+  </main>
+
+  <!-- Interactive Timed Interview Modal -->
+  <div id="simModal" class="sim-modal">
+    <div class="sim-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span class="badge badge-medium" id="simDiffBadge">MEDIUM</span>
+        <button id="closeSimBtn" style="background:transparent; border:none; font-size:20px; cursor:pointer; color:var(--text-sec);">&times;</button>
+      </div>
+      <div id="simProgress" style="font-size:13px; color:var(--text-sec); margin-bottom:8px;">Question 1 of 10</div>
+      <h3 id="simQuestionText" style="font-size:18px; margin-bottom:20px;">Question text goes here...</h3>
+      <div id="simOptionsContainer" class="q-options" style="grid-template-columns:1fr; margin-bottom:20px;"></div>
+      <div id="simFeedback" class="q-explanation" style="margin-top:0;"></div>
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+        <button id="simNextBtn" class="btn btn-primary" style="display:none;">Next Question →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>AI Interviewer • Standalone GitHub Pages Edition • Built with C++ Core Principles</p>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    let allQuestions = [];
+    let userState = {
+      solved: 0,
+      correct: 0,
+      streak: 0,
+      userAnswers: {} // questionId -> bool
+    };
+
+    // Load questions client-side from web/data/questions.json
+    async function loadQuestions() {
+      try {
+        const res = await fetch('./data/questions.json');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        allQuestions = await res.json();
+        document.getElementById('totalQuestionsStat').textContent = allQuestions.length;
+        renderQuestions();
+      } catch (err) {
+        console.error('Failed to load questions.json', err);
+        document.getElementById('questionsContainer').innerHTML = `
+          <div class="card" style="text-align:center; padding:40px; color:var(--danger);">
+            <h3>⚠️ Unable to load question catalog</h3>
+            <p style="margin-top:8px; color:var(--text-sec);">Verify that <code>web/data/questions.json</code> exists.</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questionsContainer');
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const course = document.getElementById('courseFilter').value;
+      const diff = document.getElementById('diffFilter').value;
+
+      const filtered = allQuestions.filter(q => {
+        if (course !== 'ALL' && q.course !== course) return false;
+        if (diff !== 'ALL' && q.difficulty !== diff) return false;
+        if (search) {
+          const matchText = (q.text || '').toLowerCase().includes(search);
+          const matchTopic = (q.topic || '').toLowerCase().includes(search);
+          const matchSub = (q.subject || '').toLowerCase().includes(search);
+          if (!matchText && !matchTopic && !matchSub) return false;
+        }
+        return true;
+      });
+
+      document.getElementById('countSummary').textContent = `Showing ${filtered.length} of ${allQuestions.length} questions`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="text-align:center; padding:40px; color:var(--text-sec);">
+            <p>No questions matched your current filter criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(q => {
+        const diffClass = (q.difficulty || 'MEDIUM').toLowerCase();
+        const solved = userState.userAnswers.hasOwnProperty(q.id);
+
+        let optionsHtml = '';
+        if (q.options && q.options.length > 0) {
+          optionsHtml = `<div class="q-options">` + q.options.map((opt, i) => {
+            const letter = String.fromCharCode(65 + i);
+            return `
+              <button class="opt-btn" onclick="handleAnswer('${q.id}', '${escapeHtml(opt)}', this)" ${solved ? 'disabled' : ''}>
+                <span class="opt-key">${letter}</span>
+                <span>${escapeHtml(opt)}</span>
+              </button>
+            `;
+          }).join('') + `</div>`;
+        }
+
+        return `
+          <div class="q-card" id="card-${q.id}">
+            <div class="q-header">
+              <div class="q-meta">
+                <span class="badge badge-${diffClass}">${q.difficulty}</span>
+                <span class="q-track">${q.course || 'CSE'} &bull; ${q.subject || ''} &bull; ${q.topic || ''}</span>
+              </div>
+              <span style="font-size:12px; color:var(--text-sec); font-family:'JetBrains Mono', monospace;">#${q.id}</span>
+            </div>
+            <div class="q-text">${escapeHtml(q.text)}</div>
+            ${optionsHtml}
+            <div class="q-explanation" id="exp-${q.id}">
+              <strong>Explanation:</strong> ${escapeHtml(q.explanation || 'No detailed explanation provided.')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    window.handleAnswer = function(qid, chosenOption, btnEl) {
+      const q = allQuestions.find(item => item.id === qid);
+      if (!q) return;
+
+      const card = document.getElementById('card-' + qid);
+      const buttons = card.querySelectorAll('.opt-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      const isCorrect = (chosenOption.trim().toLowerCase() === (q.answer || '').trim().toLowerCase());
+      userState.userAnswers[qid] = isCorrect;
+      userState.solved++;
+
+      if (isCorrect) {
+        userState.correct++;
+        userState.streak++;
+        btnEl.classList.add('correct');
+      } else {
+        userState.streak = 0;
+        btnEl.classList.add('incorrect');
+        // Highlight correct option
+        buttons.forEach(b => {
+          if (b.textContent.includes(q.answer)) {
+            b.classList.add('correct');
+          }
+        });
+      }
+
+      // Show explanation
+      const exp = document.getElementById('exp-' + qid);
+      if (exp) exp.classList.add('visible');
+
+      updateMetrics();
+    };
+
+    function updateMetrics() {
+      document.getElementById('scoreDisplay').textContent = userState.correct;
+      const pct = Math.round((userState.solved / (allQuestions.length || 1)) * 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('streakStat').textContent = userState.streak;
+      
+      const acc = userState.solved > 0 ? Math.round((userState.correct / userState.solved) * 100) : 100;
+      document.getElementById('accuracyStat').textContent = acc + '%';
+    }
+
+    // Modal Simulation Interview Mode
+    let simSession = {
+      questions: [],
+      currentIndex: 0,
+      score: 0
+    };
+
+    document.getElementById('startSimBtn').onclick = () => {
+      if (allQuestions.length === 0) return;
+      // Pick 10 random questions
+      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+      simSession.questions = shuffled.slice(0, 10);
+      simSession.currentIndex = 0;
+      simSession.score = 0;
+      document.getElementById('simModal').classList.add('active');
+      renderSimQuestion();
+    };
+
+    document.getElementById('closeSimBtn').onclick = () => {
+      document.getElementById('simModal').classList.remove('active');
+    };
+
+    function renderSimQuestion() {
+      const q = simSession.questions[simSession.currentIndex];
+      const total = simSession.questions.length;
+      document.getElementById('simProgress').textContent = `Question ${simSession.currentIndex + 1} of ${total}`;
+      document.getElementById('simDiffBadge').textContent = q.difficulty;
+      document.getElementById('simDiffBadge').className = `badge badge-${(q.difficulty||'medium').toLowerCase()}`;
+      document.getElementById('simQuestionText').textContent = q.text;
+
+      const optsContainer = document.getElementById('simOptionsContainer');
+      const feedback = document.getElementById('simFeedback');
+      const nextBtn = document.getElementById('simNextBtn');
+      feedback.classList.remove('visible');
+      nextBtn.style.display = 'none';
+
+      optsContainer.innerHTML = (q.options || []).map((opt, i) => {
+        const letter = String.fromCharCode(65 + i);
+        return `
+          <button class="opt-btn" onclick="handleSimAnswer('${escapeHtml(opt)}', this)">
+            <span class="opt-key">${letter}</span>
+            <span>${escapeHtml(opt)}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    window.handleSimAnswer = function(chosenOpt, btn) {
+      const q = simSession.questions[simSession.currentIndex];
+      const buttons = document.querySelectorAll('#simOptionsContainer .opt-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      const isCorrect = (chosenOpt.trim().toLowerCase() === (q.answer || '').trim().toLowerCase());
+      if (isCorrect) {
+        simSession.score++;
+        btn.classList.add('correct');
+      } else {
+        btn.classList.add('incorrect');
+        buttons.forEach(b => {
+          if (b.textContent.includes(q.answer)) b.classList.add('correct');
+        });
+      }
+
+      const feedback = document.getElementById('simFeedback');
+      feedback.textContent = q.explanation || 'No explanation provided.';
+      feedback.classList.add('visible');
+
+      const nextBtn = document.getElementById('simNextBtn');
+      if (simSession.currentIndex < simSession.questions.length - 1) {
+        nextBtn.textContent = 'Next Question →';
+        nextBtn.onclick = () => {
+          simSession.currentIndex++;
+          renderSimQuestion();
+        };
+      } else {
+        nextBtn.textContent = 'Finish Interview Session';
+        nextBtn.onclick = () => {
+          alert(`Interview Complete!\nScore: ${simSession.score} / ${simSession.questions.length}`);
+          document.getElementById('simModal').classList.remove('active');
+        };
+      }
+      nextBtn.style.display = 'inline-flex';
+    };
+
+    // Dark/Light Theme Switcher
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.onclick = () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      themeBtn.textContent = isDark ? '🌙 Theme' : '☀️ Theme';
+    };
+
+    // Search and filter input triggers
+    document.getElementById('searchInput').oninput = renderQuestions;
+    document.getElementById('courseFilter').onchange = renderQuestions;
+    document.getElementById('diffFilter').onchange = renderQuestions;
+
+    // Initialize on load
+    loadQuestions();
+  </script>
+</body>
+</html>
