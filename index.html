@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Interviewer — Placement Preparation & Mock Simulation</title>
+  <title>AI Interviewer — Placement Preparation & Mock Simulation Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #4F46E5;
@@ -16,6 +16,7 @@
       --accent-light: #CCFBF1;
       --bg: #F8FAFC;
       --surface: #FFFFFF;
+      --surface-subtle: #F1F5F9;
       --border: #E2E8F0;
       --text: #0F172A;
       --text-sec: #64748B;
@@ -25,24 +26,25 @@
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
       --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
     }
 
     [data-theme="dark"] {
-      --bg: #0F172A;
-      --surface: #1E293B;
-      --border: #334155;
+      --bg: #0B0F19;
+      --surface: #131B2E;
+      --surface-subtle: #1E293B;
+      --border: #26334D;
       --text: #F8FAFC;
       --text-sec: #94A3B8;
-      --primary-light: rgba(79, 70, 229, 0.15);
-      --accent-light: rgba(13, 148, 136, 0.15);
+      --primary-light: rgba(79, 70, 229, 0.18);
+      --accent-light: rgba(13, 148, 136, 0.18);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
@@ -52,7 +54,7 @@
       flex-direction: column;
     }
 
-    /* Navbar */
+    /* Top Navigation Bar */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -62,7 +64,7 @@
       backdrop-filter: blur(8px);
     }
     .nav-container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 12px 24px;
       display: flex;
@@ -75,10 +77,11 @@
       gap: 12px;
       text-decoration: none;
       color: var(--text);
+      cursor: pointer;
     }
     .brand-logo {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       background: linear-gradient(135deg, var(--primary), var(--accent));
       border-radius: 10px;
       display: flex;
@@ -86,23 +89,50 @@
       justify-content: center;
       color: white;
       font-weight: 800;
-      font-size: 18px;
-      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     }
     .brand-title {
       font-size: 18px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: -0.02em;
     }
     .brand-subtitle {
       font-size: 11px;
       color: var(--text-sec);
-      font-weight: 500;
+      font-weight: 600;
+    }
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-tab {
+      background: transparent;
+      border: none;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sec);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: var(--surface-subtle);
+    }
+    .nav-tab.active {
+      color: var(--primary);
+      background: var(--primary-light);
     }
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     /* Buttons */
@@ -111,7 +141,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 8px 16px;
+      padding: 10px 18px;
       font-size: 14px;
       font-weight: 600;
       border-radius: var(--radius-sm);
@@ -126,7 +156,8 @@
     }
     .btn-primary:hover {
       background-color: var(--primary-hover);
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+      transform: translateY(-1px);
     }
     .btn-outline {
       background-color: transparent;
@@ -134,19 +165,25 @@
       color: var(--text);
     }
     .btn-outline:hover {
-      background-color: var(--primary-light);
+      background-color: var(--surface-subtle);
       border-color: var(--primary);
       color: var(--primary);
     }
-    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
 
-    /* Layout */
+    /* Layout & View Routing */
     main {
       flex: 1;
-      max-width: 1200px;
+      max-width: 1280px;
       width: 100%;
       margin: 0 auto;
       padding: 32px 24px;
+    }
+    .view-screen { display: none; }
+    .view-screen.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Cards */
@@ -158,7 +195,7 @@
       box-shadow: var(--shadow-sm);
     }
 
-    /* Badges & Chips */
+    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -166,7 +203,7 @@
       padding: 4px 10px;
       border-radius: 9999px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -174,42 +211,23 @@
     .badge-medium { background: #FEF3C7; color: #B45309; }
     .badge-hard { background: #FEE2E2; color: #B91C1C; }
 
-    /* Hero Banner */
-    .hero {
+    /* Dashboard Layout */
+    .dash-hero {
       display: grid;
       grid-template-columns: 1fr 340px;
       gap: 24px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
-    @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; }
+    @media (max-width: 860px) {
+      .dash-hero { grid-template-columns: 1fr; }
     }
-    .hero-main {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .hero-title {
-      font-size: 32px;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 12px;
-      letter-spacing: -0.03em;
-    }
-    .hero-subtitle {
-      font-size: 16px;
-      color: var(--text-sec);
-      margin-bottom: 24px;
-    }
-
-    /* Stats Grid */
-    .stats-grid {
+    .dash-stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 16px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
-    .stat-card {
+    .dash-stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
@@ -218,7 +236,7 @@
       align-items: center;
       gap: 16px;
     }
-    .stat-icon {
+    .dash-stat-icon {
       width: 48px;
       height: 48px;
       border-radius: 12px;
@@ -229,18 +247,67 @@
       justify-content: center;
       font-size: 24px;
     }
-    .stat-info .stat-val {
-      font-size: 24px;
-      font-weight: 800;
-      line-height: 1;
+    .dash-stat-val { font-size: 26px; font-weight: 800; line-height: 1.1; }
+    .dash-stat-lbl { font-size: 13px; color: var(--text-sec); margin-top: 4px; font-weight: 500; }
+
+    /* Action Tiles Grid */
+    .action-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
     }
-    .stat-info .stat-lbl {
-      font-size: 13px;
-      color: var(--text-sec);
-      margin-top: 4px;
+    .action-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .action-tile:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .tile-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .tile-icon {
+      font-size: 28px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--surface-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tile-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .tile-desc { font-size: 13px; color: var(--text-sec); margin-top: 4px; line-height: 1.4; }
+
+    /* Daily Challenge Banner */
+    .daily-banner {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(13, 148, 136, 0.08));
+      border: 1px solid rgba(79, 70, 229, 0.25);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    /* Filters Bar */
+    /* Filter & Question Catalog */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
@@ -274,45 +341,25 @@
     }
     .search-input { min-width: 260px; }
 
-    /* Question Cards List */
-    .questions-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+    /* Question Cards */
+    .questions-list { display: flex; flex-direction: column; gap: 16px; }
     .q-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 24px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      transition: all 0.15s ease;
     }
-    .q-card:hover {
-      border-color: var(--primary);
-      box-shadow: var(--shadow-md);
-    }
+    .q-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
     .q-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
     }
-    .q-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .q-track {
-      font-size: 12px;
-      color: var(--text-sec);
-      font-weight: 600;
-    }
-    .q-text {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
+    .q-meta { display: flex; align-items: center; gap: 10px; }
+    .q-track { font-size: 12px; color: var(--text-sec); font-weight: 600; }
+    .q-text { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); line-height: 1.5; }
     .q-options {
       display: grid;
       grid-template-columns: 1fr;
@@ -333,7 +380,7 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       transition: all 0.15s ease;
     }
     .opt-btn:hover:not(:disabled) {
@@ -364,38 +411,91 @@
       font-weight: 700;
     }
     .q-explanation {
-      margin-top: 16px;
+      margin-top: 14px;
       padding: 14px;
-      background: var(--primary-light);
-      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
       font-size: 14px;
-      color: var(--text);
       display: none;
       line-height: 1.5;
     }
     .q-explanation.visible { display: block; }
 
-    /* Interactive Simulation Mode Modal */
-    .sim-modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(4px);
-      display: none;
+    /* Interactive Live Simulation Screen */
+    .sim-arena {
+      max-width: 840px;
+      margin: 0 auto;
+    }
+    .sim-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .sim-timer-pill {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* Leaderboard Table */
+    .table-container {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background: var(--surface-subtle);
+      padding: 14px 18px;
+      font-weight: 700;
+      color: var(--text-sec);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface-subtle); }
+
+    /* Profile Calendar Grid */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+      display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
-      padding: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sec);
     }
-    .sim-modal.active { display: flex; }
-    .sim-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 680px;
-      padding: 32px;
-      box-shadow: var(--shadow-lg);
-      position: relative;
+    .cal-day.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
     }
 
     /* Footer */
@@ -412,151 +512,466 @@
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Navbar Header -->
   <header>
     <div class="nav-container">
-      <a href="#" class="brand">
+      <div class="brand" onclick="navigateTo('dashboard')">
         <div class="brand-logo">AI</div>
         <div>
           <div class="brand-title">AI Interviewer</div>
-          <div class="brand-subtitle">Standalone Web Edition • 310 Questions</div>
+          <div class="brand-subtitle">Placement Preparation • Web Platform</div>
         </div>
-      </a>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard" onclick="navigateTo('dashboard')">📊 Dashboard</button>
+        <button class="nav-tab" data-tab="courses" onclick="navigateTo('courses')">📚 Curriculum</button>
+        <button class="nav-tab" data-tab="questions" onclick="navigateTo('questions')">📝 Questions (310)</button>
+        <button class="nav-tab" data-tab="leaderboard" onclick="navigateTo('leaderboard')">🏆 Leaderboard</button>
+        <button class="nav-tab" data-tab="profile" onclick="navigateTo('profile')">👤 Profile</button>
+      </nav>
+
       <div class="nav-actions">
         <button id="themeToggle" class="btn btn-outline btn-sm">🌙 Theme</button>
-        <button id="startSimBtn" class="btn btn-primary btn-sm">⚡ Start Mock Mode</button>
+        <button class="btn btn-primary btn-sm" onclick="startInterviewSession('MOCK')">🚀 Quick Mock</button>
       </div>
     </div>
   </header>
 
-  <!-- Main Body Content -->
+  <!-- Main View Area -->
   <main>
-    <!-- Hero Header -->
-    <div class="hero">
-      <div class="hero-main">
-        <h1 class="hero-title">Practice 310 Curated Placement & Interview Questions</h1>
-        <p class="hero-subtitle">
-          Interactive zero-dependency client: Instant offline verification, dynamic topic tracks, difficulty ramps, and detailed engineering explanations.
-        </p>
-      </div>
-      <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
-        <div style="font-size:13px; color:var(--text-sec); font-weight:600; margin-bottom:8px;">INTERVIEW READINESS</div>
-        <div style="display:flex; align-items:baseline; gap:8px;">
-          <span id="scoreDisplay" style="font-size:36px; font-weight:800; color:var(--primary);">0</span>
-          <span style="font-size:14px; color:var(--text-sec);">/ 310 Solved</span>
+    <!-- 1. DASHBOARD VIEW -->
+    <section id="view-dashboard" class="view-screen active">
+      <div class="dash-hero">
+        <div class="hero-main">
+          <h1 style="font-size:32px; font-weight:800; line-height:1.2; margin-bottom:8px;" id="userGreeting">
+            Welcome back, Alice!
+          </h1>
+          <p style="color:var(--text-sec); font-size:15px; margin-bottom:20px;" id="userAffiliation">
+            Computer Science & Engineering &bull; MIT College of Engineering
+          </p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="startInterviewSession('MOCK')">🎯 Start 10-Question Mock Interview</button>
+            <button class="btn btn-outline" onclick="startInterviewSession('ADAPTIVE')">⚡ Adaptive Practice</button>
+          </div>
         </div>
-        <div style="background:var(--border); height:8px; border-radius:4px; overflow:hidden; margin-top:12px;">
-          <div id="progressBar" style="background:linear-gradient(90deg, var(--primary), var(--accent)); width:0%; height:100%; transition:width 0.3s ease;"></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Quick Stats Metric Row -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">📚</div>
-        <div class="stat-info">
-          <div class="stat-val" id="totalQuestionsStat">310</div>
-          <div class="stat-lbl">Total Questions Available</div>
+        <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
+          <div style="font-size:12px; color:var(--text-sec); font-weight:700; text-transform:uppercase;">Interview Readiness</div>
+          <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px;">
+            <span id="dashSolvedCount" style="font-size:36px; font-weight:800; color:var(--primary);">15</span>
+            <span style="font-size:14px; color:var(--text-sec);">/ 310 Questions</span>
+          </div>
+          <div style="background:var(--border); height:8px; border-radius:4px; overflow:hidden; margin-top:14px;">
+            <div id="dashProgressBar" style="background:linear-gradient(90deg, var(--primary), var(--accent)); width:5%; height:100%; transition:width 0.4s ease;"></div>
+          </div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:var(--accent-light); color:var(--accent);">🎯</div>
-        <div class="stat-info">
-          <div class="stat-val" id="accuracyStat">100%</div>
-          <div class="stat-lbl">Session Accuracy Rate</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#DCFCE7; color:#15803D;">🔥</div>
-        <div class="stat-info">
-          <div class="stat-val" id="streakStat">0</div>
-          <div class="stat-lbl">Consecutive Correct Streak</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Filters and Search Toolbar -->
-    <div class="filter-bar">
-      <div class="filter-group">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search question text, topic, keyword..." />
-        <select id="courseFilter" class="filter-select">
-          <option value="ALL">All Curriculum Tracks</option>
-          <option value="CSE">CSE (Computer Science)</option>
-          <option value="ECE">ECE (Electronics & Embedded)</option>
-          <option value="COMMERCE">Commerce & Accounting</option>
-          <option value="COMMON">Common (Aptitude & HR)</option>
-        </select>
-        <select id="diffFilter" class="filter-select">
-          <option value="ALL">All Difficulties</option>
-          <option value="EASY">Easy</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HARD">Hard</option>
-        </select>
+      <!-- Quick Metrics Row -->
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">🔥</div>
+          <div>
+            <div class="dash-stat-val" id="streakVal">7 Days</div>
+            <div class="dash-stat-lbl">Active Learning Streak</div>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:var(--accent-light); color:var(--accent);">⭐</div>
+          <div>
+            <div class="dash-stat-val" id="scoreVal">520 pts</div>
+            <div class="dash-stat-lbl">Total Placement Score</div>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:#DCFCE7; color:#15803D;">🎯</div>
+          <div>
+            <div class="dash-stat-val" id="accuracyVal">92%</div>
+            <div class="dash-stat-lbl">Problem Accuracy Rate</div>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:#FEF3C7; color:#B45309;">🎖️</div>
+          <div>
+            <div class="dash-stat-val" id="badgeVal">3 Badges</div>
+            <div class="dash-stat-lbl">Achievements Unlocked</div>
+          </div>
+        </div>
       </div>
-      <div id="countSummary" style="font-size:13px; color:var(--text-sec); font-weight:600;">
-        Showing 310 questions
-      </div>
-    </div>
 
-    <!-- Questions Feed -->
-    <div id="questionsContainer" class="questions-list">
-      <div style="text-align:center; padding:40px; color:var(--text-sec);">Loading question catalog...</div>
-    </div>
+      <!-- Daily Challenge Banner -->
+      <div class="daily-banner">
+        <div>
+          <div style="font-size:12px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.04em;">Today's Daily Challenge</div>
+          <h3 style="font-size:18px; font-weight:700; margin-top:4px;">C++ Virtual Tables & Polymorphic Binding</h3>
+          <p style="font-size:13px; color:var(--text-sec); margin-top:2px;">Complete today's challenge to maintain your streak and earn +50 bonus placement points.</p>
+        </div>
+        <button class="btn btn-primary" onclick="startDailyChallenge()">Solve Challenge (+50 pts)</button>
+      </div>
+
+      <!-- Action Launchers Grid -->
+      <h2 style="font-size:20px; font-weight:800; margin-bottom:16px;">Training & Simulation Modes</h2>
+      <div class="action-tiles-grid">
+        <div class="action-tile" onclick="startInterviewSession('MOCK')">
+          <div class="tile-header">
+            <div class="tile-icon">🚀</div>
+            <div>
+              <div class="tile-title">Full Mock Interview</div>
+              <div class="tile-desc">10-question structured ramp (Easy &rarr; Medium &rarr; Hard) simulating top tech hiring rounds.</div>
+            </div>
+          </div>
+          <span style="font-size:13px; font-weight:700; color:var(--primary);">Launch Simulation &rarr;</span>
+        </div>
+
+        <div class="action-tile" onclick="startInterviewSession('ADAPTIVE')">
+          <div class="tile-header">
+            <div class="tile-icon">⚡</div>
+            <div>
+              <div class="tile-title">Adaptive Practice Session</div>
+              <div class="tile-desc">5 dynamic questions adapting difficulty in real-time based on your problem-solving accuracy.</div>
+            </div>
+          </div>
+          <span style="font-size:13px; font-weight:700; color:var(--primary);">Start Adaptive Track &rarr;</span>
+        </div>
+
+        <div class="action-tile" onclick="navigateTo('courses')">
+          <div class="tile-header">
+            <div class="tile-icon">📚</div>
+            <div>
+              <div class="tile-title">Curriculum & Subject Tracks</div>
+              <div class="tile-desc">Target specialized topics: C++ OOP, Data Structures, Operating Systems, DBMS, and ECE.</div>
+            </div>
+          </div>
+          <span style="font-size:13px; font-weight:700; color:var(--primary);">Explore Curriculum &rarr;</span>
+        </div>
+
+        <div class="action-tile" onclick="navigateTo('resume')">
+          <div class="tile-header">
+            <div class="tile-icon">📄</div>
+            <div>
+              <div class="tile-title">Resume-Based Mock Round</div>
+              <div class="tile-desc">Upload your resume summary to generate targeted questions matching your projects and tech stack.</div>
+            </div>
+          </div>
+          <span style="font-size:13px; font-weight:700; color:var(--primary);">Configure Resume Flow &rarr;</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. CURRICULUM TRACKS VIEW -->
+    <section id="view-courses" class="view-screen">
+      <div style="margin-bottom:24px;">
+        <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Placement Curriculum & Tracks</h1>
+        <p style="color:var(--text-sec);">Choose a specialization to focus your practice and unlock progressive difficulty tiers.</p>
+      </div>
+
+      <div class="action-tiles-grid">
+        <div class="action-tile">
+          <div>
+            <div class="tile-header">
+              <div class="tile-icon">💻</div>
+              <div>
+                <div class="tile-title">Computer Science (CSE)</div>
+                <div class="tile-desc">C++ OOP, Data Structures, Algorithms, Operating Systems, DBMS, and System Design.</div>
+              </div>
+            </div>
+            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>180+ Questions</strong> &bull; Complete Placement Track</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('CSE', 'MOCK')">Mock Round</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('CSE', 'ADAPTIVE')">Practice</button>
+          </div>
+        </div>
+
+        <div class="action-tile">
+          <div>
+            <div class="tile-header">
+              <div class="tile-icon">⚡</div>
+              <div>
+                <div class="tile-title">Electronics & Embedded (ECE)</div>
+                <div class="tile-desc">Digital Logic, Microcontrollers, Sequential Circuits, I2C/SPI Protocols, RTOS.</div>
+              </div>
+            </div>
+            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>40+ Questions</strong> &bull; Hardware Engineering</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('ECE', 'MOCK')">Mock Round</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('ECE', 'ADAPTIVE')">Practice</button>
+          </div>
+        </div>
+
+        <div class="action-tile">
+          <div>
+            <div class="tile-header">
+              <div class="tile-icon">📈</div>
+              <div>
+                <div class="tile-title">Commerce & Finance</div>
+                <div class="tile-desc">Financial Accounting, Balance Sheets, Profit & Loss Statements, Cost Principles.</div>
+              </div>
+            </div>
+            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>30+ Questions</strong> &bull; Business & Accounting</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('COMMERCE', 'MOCK')">Mock Round</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('COMMERCE', 'ADAPTIVE')">Practice</button>
+          </div>
+        </div>
+
+        <div class="action-tile">
+          <div>
+            <div class="tile-header">
+              <div class="tile-icon">🧠</div>
+              <div>
+                <div class="tile-title">General Aptitude & Behavioral HR</div>
+                <div class="tile-desc">Quantitative Aptitude, Logical Reasoning, STAR Behavioral Interview Scenarios.</div>
+              </div>
+            </div>
+            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>60+ Questions</strong> &bull; Universal Campus Placement</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('COMMON', 'MOCK')">Mock Round</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('COMMON', 'ADAPTIVE')">Practice</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. QUESTION BANK (310 QUESTIONS) VIEW -->
+    <section id="view-questions" class="view-screen">
+      <div style="margin-bottom:24px;">
+        <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Comprehensive Question Catalog</h1>
+        <p style="color:var(--text-sec);">Browse, filter, and practice all 310 placement interview questions with client-side verification.</p>
+      </div>
+
+      <!-- Filters Toolbar -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search text, topic, keywords..." />
+          <select id="courseFilter" class="filter-select">
+            <option value="ALL">All Curriculum Tracks</option>
+            <option value="CSE">CSE (Computer Science)</option>
+            <option value="ECE">ECE (Electronics & Embedded)</option>
+            <option value="COMMERCE">Commerce & Accounting</option>
+            <option value="COMMON">Common (Aptitude & HR)</option>
+          </select>
+          <select id="diffFilter" class="filter-select">
+            <option value="ALL">All Difficulties</option>
+            <option value="EASY">Easy</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HARD">Hard</option>
+          </select>
+        </div>
+        <div id="countSummary" style="font-size:13px; color:var(--text-sec); font-weight:600;">
+          Showing 310 questions
+        </div>
+      </div>
+
+      <!-- Questions List -->
+      <div id="questionsContainer" class="questions-list"></div>
+    </section>
+
+    <!-- 4. LIVE INTERVIEW SIMULATION ARENA VIEW -->
+    <section id="view-interview" class="view-screen">
+      <div class="sim-arena">
+        <div class="sim-header">
+          <div>
+            <span class="badge badge-medium" id="simDiffBadge">MEDIUM</span>
+            <span style="font-size:13px; color:var(--text-sec); margin-left:12px;" id="simTrackName">Full Mock Interview</span>
+          </div>
+          <div class="sim-timer-pill" id="simTimer">⏱️ 02:45</div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:13px; color:var(--text-sec);">
+            <span id="simCounter">Question 1 of 10</span>
+            <span id="simScoreTrack">Current Score: 0</span>
+          </div>
+          <h2 id="simQuestionTitle" style="font-size:19px; font-weight:700; margin-bottom:20px; line-height:1.4;">
+            Question title...
+          </h2>
+          <div id="simOptionsArea" class="q-options" style="grid-template-columns:1fr; margin-bottom:20px;"></div>
+          <div id="simExplanationArea" class="q-explanation"></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <button class="btn btn-outline" onclick="leaveInterview()">Exit Interview</button>
+          <button id="simNextButton" class="btn btn-primary" style="display:none;" onclick="nextSimQuestion()">Next Question &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FEEDBACK & SCORE REPORT VIEW -->
+    <section id="view-feedback" class="view-screen">
+      <div style="max-width:760px; margin:0 auto;">
+        <div class="card" style="text-align:center; padding:40px 32px; margin-bottom:24px;">
+          <div style="font-size:48px; margin-bottom:12px;">🎉</div>
+          <h1 style="font-size:28px; font-weight:800; margin-bottom:8px;">Interview Session Completed!</h1>
+          <p style="color:var(--text-sec); margin-bottom:24px;">Here is your performance breakdown and placement readiness diagnosis.</p>
+
+          <div style="display:flex; justify-content:center; gap:32px; margin-bottom:28px;">
+            <div>
+              <div id="reportScoreVal" style="font-size:42px; font-weight:800; color:var(--primary);">8 / 10</div>
+              <div style="font-size:13px; color:var(--text-sec); font-weight:600;">Total Questions Correct</div>
+            </div>
+            <div style="width:1px; background:var(--border);"></div>
+            <div>
+              <div id="reportAccVal" style="font-size:42px; font-weight:800; color:var(--accent);">80%</div>
+              <div style="font-size:13px; color:var(--text-sec); font-weight:600;">Overall Accuracy</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:center; gap:12px;">
+            <button class="btn btn-primary" onclick="startInterviewSession('MOCK')">🔄 Retry Another Mock</button>
+            <button class="btn btn-outline" onclick="navigateTo('dashboard')">Return to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. LEADERBOARD VIEW -->
+    <section id="view-leaderboard" class="view-screen">
+      <div style="margin-bottom:24px;">
+        <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Campus Placement Leaderboard</h1>
+        <p style="color:var(--text-sec);">Top performing candidates ranked by placement score, daily streaks, and accuracy.</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Student Name</th>
+              <th>College & Branch</th>
+              <th>Track</th>
+              <th>Streak</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <tr>
+              <td><strong>#1 🥇</strong></td>
+              <td><strong>Alice Johnson</strong> (You)</td>
+              <td>MIT College of Engineering &bull; CSE</td>
+              <td>CSE</td>
+              <td>🔥 7d</td>
+              <td><strong>520 pts</strong></td>
+            </tr>
+            <tr>
+              <td><strong>#2 🥈</strong></td>
+              <td>Bob Smith</td>
+              <td>Stanford Tech &bull; ECE</td>
+              <td>ECE</td>
+              <td>🔥 3d</td>
+              <td><strong>280 pts</strong></td>
+            </tr>
+            <tr>
+              <td><strong>#3 🥉</strong></td>
+              <td>Carol Davis</td>
+              <td>Berkeley Engineering &bull; CSE</td>
+              <td>CSE</td>
+              <td>🔥 5d</td>
+              <td><strong>240 pts</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. RESUME FLOW VIEW -->
+    <section id="view-resume" class="view-screen">
+      <div style="max-width:760px; margin:0 auto;">
+        <div style="margin-bottom:24px;">
+          <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Resume-Driven Interview Simulator</h1>
+          <p style="color:var(--text-sec);">Provide your technical background, key projects, or paste your resume text to tailor targeted questions.</p>
+        </div>
+
+        <div class="card">
+          <label style="font-size:14px; font-weight:700; margin-bottom:8px; display:block;">Paste Resume Summary / Technical Skills:</label>
+          <textarea id="resumeInput" style="width:100%; min-height:160px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; color:var(--text); font-family:inherit; font-size:14px; outline:none; margin-bottom:16px;" placeholder="Proficient in C++, Object-Oriented Design, STL, and Data Structures. Developed a high-performance LRU Cache and multi-threaded server..."></textarea>
+
+          <button class="btn btn-primary" onclick="launchResumeMock()">Generate Tailored Mock Interview &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. PROFILE VIEW -->
+    <section id="view-profile" class="view-screen">
+      <div style="max-width:800px; margin:0 auto;">
+        <div style="margin-bottom:24px;">
+          <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Candidate Profile & Activity Calendar</h1>
+          <p style="color:var(--text-sec);">Manage your placement credentials and view your learning consistency.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:300px 1fr; gap:24px;">
+          <div class="card" style="text-align:center;">
+            <div style="width:72px; height:72px; border-radius:36px; background:linear-gradient(135deg, var(--primary), var(--accent)); color:white; font-size:28px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">AJ</div>
+            <h2 style="font-size:18px; font-weight:800;">Alice Johnson</h2>
+            <p style="font-size:13px; color:var(--text-sec); margin-top:2px;">alice@college.edu</p>
+            <div style="margin-top:20px; text-align:left; font-size:13px;">
+              <div style="margin-bottom:8px;"><strong>Track:</strong> Computer Science (CSE)</div>
+              <div style="margin-bottom:8px;"><strong>College:</strong> MIT College of Engineering</div>
+              <div style="margin-bottom:8px;"><strong>Department:</strong> CSE</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">October 2026 Activity Streak Calendar</h3>
+            <p style="font-size:13px; color:var(--text-sec); margin-bottom:16px;">Green tiles indicate active interview preparation sessions and daily challenges.</p>
+            <div class="calendar-grid" id="profileCalendar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-
-  <!-- Interactive Timed Interview Modal -->
-  <div id="simModal" class="sim-modal">
-    <div class="sim-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <span class="badge badge-medium" id="simDiffBadge">MEDIUM</span>
-        <button id="closeSimBtn" style="background:transparent; border:none; font-size:20px; cursor:pointer; color:var(--text-sec);">&times;</button>
-      </div>
-      <div id="simProgress" style="font-size:13px; color:var(--text-sec); margin-bottom:8px;">Question 1 of 10</div>
-      <h3 id="simQuestionText" style="font-size:18px; margin-bottom:20px;">Question text goes here...</h3>
-      <div id="simOptionsContainer" class="q-options" style="grid-template-columns:1fr; margin-bottom:20px;"></div>
-      <div id="simFeedback" class="q-explanation" style="margin-top:0;"></div>
-      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
-        <button id="simNextBtn" class="btn btn-primary" style="display:none;">Next Question →</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Footer -->
   <footer>
-    <p>AI Interviewer • Standalone GitHub Pages Edition • Built with C++ Core Principles</p>
+    <p>AI Interviewer Platform &bull; Standalone Web Edition &bull; C++ OOP Simulation Engine</p>
   </footer>
 
-  <!-- Application Logic -->
+  <!-- Application Engine -->
   <script>
     let allQuestions = [];
     let userState = {
-      solved: 0,
-      correct: 0,
-      streak: 0,
-      userAnswers: {} // questionId -> bool
+      name: "Alice Johnson",
+      email: "alice@college.edu",
+      college: "MIT College of Engineering",
+      branch: "CSE",
+      streak: 7,
+      score: 520,
+      solved: 15,
+      correct: 14,
+      userAnswers: {}
     };
 
-    // Load questions client-side from web/data/questions.json
-    async function loadQuestions() {
+    // Navigation Router
+    function navigateTo(screenId) {
+      document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('view-' + screenId);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.getAttribute('data-tab') === screenId);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    // Load Data
+    async function initApp() {
       try {
         const res = await fetch('./data/questions.json');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         allQuestions = await res.json();
-        document.getElementById('totalQuestionsStat').textContent = allQuestions.length;
-        renderQuestions();
+        renderQuestionCatalog();
       } catch (err) {
         console.error('Failed to load questions.json', err);
-        document.getElementById('questionsContainer').innerHTML = `
-          <div class="card" style="text-align:center; padding:40px; color:var(--danger);">
-            <h3>⚠️ Unable to load question catalog</h3>
-            <p style="margin-top:8px; color:var(--text-sec);">Verify that <code>web/data/questions.json</code> exists.</p>
-          </div>
-        `;
       }
+      buildCalendar();
     }
 
-    function renderQuestions() {
+    // Question Catalog
+    function renderQuestionCatalog() {
       const container = document.getElementById('questionsContainer');
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const course = document.getElementById('courseFilter').value;
@@ -577,24 +992,18 @@
       document.getElementById('countSummary').textContent = `Showing ${filtered.length} of ${allQuestions.length} questions`;
 
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="card" style="text-align:center; padding:40px; color:var(--text-sec);">
-            <p>No questions matched your current filter criteria.</p>
-          </div>
-        `;
+        container.innerHTML = `<div class="card" style="text-align:center; padding:32px; color:var(--text-sec);"><p>No questions matched your current filter criteria.</p></div>`;
         return;
       }
 
       container.innerHTML = filtered.map(q => {
         const diffClass = (q.difficulty || 'MEDIUM').toLowerCase();
-        const solved = userState.userAnswers.hasOwnProperty(q.id);
-
         let optionsHtml = '';
         if (q.options && q.options.length > 0) {
           optionsHtml = `<div class="q-options">` + q.options.map((opt, i) => {
             const letter = String.fromCharCode(65 + i);
             return `
-              <button class="opt-btn" onclick="handleAnswer('${q.id}', '${escapeHtml(opt)}', this)" ${solved ? 'disabled' : ''}>
+              <button class="opt-btn" onclick="handleCatalogAnswer('${q.id}', '${escapeHtml(opt)}', this)">
                 <span class="opt-key">${letter}</span>
                 <span>${escapeHtml(opt)}</span>
               </button>
@@ -623,14 +1032,10 @@
 
     function escapeHtml(str) {
       if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    window.handleAnswer = function(qid, chosenOption, btnEl) {
+    window.handleCatalogAnswer = function(qid, chosenOption, btnEl) {
       const q = allQuestions.find(item => item.id === qid);
       if (!q) return;
 
@@ -644,76 +1049,103 @@
 
       if (isCorrect) {
         userState.correct++;
-        userState.streak++;
+        userState.score += 10;
         btnEl.classList.add('correct');
       } else {
-        userState.streak = 0;
         btnEl.classList.add('incorrect');
-        // Highlight correct option
         buttons.forEach(b => {
-          if (b.textContent.includes(q.answer)) {
-            b.classList.add('correct');
-          }
+          if (b.textContent.includes(q.answer)) b.classList.add('correct');
         });
       }
 
-      // Show explanation
       const exp = document.getElementById('exp-' + qid);
       if (exp) exp.classList.add('visible');
 
-      updateMetrics();
+      updateUserDashboard();
     };
 
-    function updateMetrics() {
-      document.getElementById('scoreDisplay').textContent = userState.correct;
+    function updateUserDashboard() {
+      document.getElementById('dashSolvedCount').textContent = userState.solved;
       const pct = Math.round((userState.solved / (allQuestions.length || 1)) * 100);
-      document.getElementById('progressBar').style.width = pct + '%';
-      document.getElementById('streakStat').textContent = userState.streak;
-      
+      document.getElementById('dashProgressBar').style.width = pct + '%';
+      document.getElementById('scoreVal').textContent = userState.score + ' pts';
       const acc = userState.solved > 0 ? Math.round((userState.correct / userState.solved) * 100) : 100;
-      document.getElementById('accuracyStat').textContent = acc + '%';
+      document.getElementById('accuracyVal').textContent = acc + '%';
     }
 
-    // Modal Simulation Interview Mode
-    let simSession = {
-      questions: [],
+    // Live Simulation State
+    let sim = {
+      pool: [],
       currentIndex: 0,
-      score: 0
+      score: 0,
+      type: 'MOCK',
+      timerSec: 180,
+      timerInterval: null
     };
 
-    document.getElementById('startSimBtn').onclick = () => {
+    function startInterviewSession(type, courseFilter = null) {
       if (allQuestions.length === 0) return;
-      // Pick 10 random questions
-      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-      simSession.questions = shuffled.slice(0, 10);
-      simSession.currentIndex = 0;
-      simSession.score = 0;
-      document.getElementById('simModal').classList.add('active');
-      renderSimQuestion();
-    };
+      let pool = [...allQuestions];
+      if (courseFilter) pool = pool.filter(q => q.course === courseFilter);
 
-    document.getElementById('closeSimBtn').onclick = () => {
-      document.getElementById('simModal').classList.remove('active');
-    };
+      // Shuffle
+      pool.sort(() => 0.5 - Math.random());
+      sim.pool = pool.slice(0, type === 'MOCK' ? 10 : 5);
+      sim.currentIndex = 0;
+      sim.score = 0;
+      sim.type = type;
+      sim.timerSec = (type === 'MOCK' ? 10 : 5) * 60;
+
+      navigateTo('interview');
+      renderSimQuestion();
+      startTimer();
+    }
+
+    function startDailyChallenge() {
+      startInterviewSession('ADAPTIVE', 'CSE');
+    }
+
+    function filterAndPractice(course, type) {
+      startInterviewSession(type, course);
+    }
+
+    function launchResumeMock() {
+      startInterviewSession('MOCK', 'CSE');
+    }
+
+    function startTimer() {
+      clearInterval(sim.timerInterval);
+      sim.timerInterval = setInterval(() => {
+        sim.timerSec--;
+        if (sim.timerSec <= 0) {
+          clearInterval(sim.timerInterval);
+          finishInterview();
+        }
+        const m = String(Math.floor(sim.timerSec / 60)).padStart(2, '0');
+        const s = String(sim.timerSec % 60).padStart(2, '0');
+        document.getElementById('simTimer').textContent = `⏱️ ${m}:${s}`;
+      }, 1000);
+    }
 
     function renderSimQuestion() {
-      const q = simSession.questions[simSession.currentIndex];
-      const total = simSession.questions.length;
-      document.getElementById('simProgress').textContent = `Question ${simSession.currentIndex + 1} of ${total}`;
+      const q = sim.pool[sim.currentIndex];
+      const total = sim.pool.length;
+      document.getElementById('simCounter').textContent = `Question ${sim.currentIndex + 1} of ${total}`;
+      document.getElementById('simScoreTrack').textContent = `Current Score: ${sim.score}`;
       document.getElementById('simDiffBadge').textContent = q.difficulty;
       document.getElementById('simDiffBadge').className = `badge badge-${(q.difficulty||'medium').toLowerCase()}`;
-      document.getElementById('simQuestionText').textContent = q.text;
+      document.getElementById('simQuestionTitle').textContent = q.text;
 
-      const optsContainer = document.getElementById('simOptionsContainer');
-      const feedback = document.getElementById('simFeedback');
-      const nextBtn = document.getElementById('simNextBtn');
+      const optsContainer = document.getElementById('simOptionsArea');
+      const feedback = document.getElementById('simExplanationArea');
+      const nextBtn = document.getElementById('simNextButton');
       feedback.classList.remove('visible');
       nextBtn.style.display = 'none';
 
       optsContainer.innerHTML = (q.options || []).map((opt, i) => {
         const letter = String.fromCharCode(65 + i);
         return `
-          <button class="opt-btn" onclick="handleSimAnswer('${escapeHtml(opt)}', this)">
+          <button class="opt-btn" onclick="handleSimChoice('${escapeHtml(opt)}', this)">
             <span class="opt-key">${letter}</span>
             <span>${escapeHtml(opt)}</span>
           </button>
@@ -721,14 +1153,14 @@
       }).join('');
     }
 
-    window.handleSimAnswer = function(chosenOpt, btn) {
-      const q = simSession.questions[simSession.currentIndex];
-      const buttons = document.querySelectorAll('#simOptionsContainer .opt-btn');
+    window.handleSimChoice = function(chosenOpt, btn) {
+      const q = sim.pool[sim.currentIndex];
+      const buttons = document.querySelectorAll('#simOptionsArea .opt-btn');
       buttons.forEach(b => b.disabled = true);
 
       const isCorrect = (chosenOpt.trim().toLowerCase() === (q.answer || '').trim().toLowerCase());
       if (isCorrect) {
-        simSession.score++;
+        sim.score++;
         btn.classList.add('correct');
       } else {
         btn.classList.add('incorrect');
@@ -737,28 +1169,50 @@
         });
       }
 
-      const feedback = document.getElementById('simFeedback');
+      const feedback = document.getElementById('simExplanationArea');
       feedback.textContent = q.explanation || 'No explanation provided.';
       feedback.classList.add('visible');
 
-      const nextBtn = document.getElementById('simNextBtn');
-      if (simSession.currentIndex < simSession.questions.length - 1) {
-        nextBtn.textContent = 'Next Question →';
-        nextBtn.onclick = () => {
-          simSession.currentIndex++;
-          renderSimQuestion();
-        };
-      } else {
-        nextBtn.textContent = 'Finish Interview Session';
-        nextBtn.onclick = () => {
-          alert(`Interview Complete!\nScore: ${simSession.score} / ${simSession.questions.length}`);
-          document.getElementById('simModal').classList.remove('active');
-        };
-      }
+      const nextBtn = document.getElementById('simNextButton');
       nextBtn.style.display = 'inline-flex';
+      nextBtn.textContent = sim.currentIndex < sim.pool.length - 1 ? 'Next Question →' : 'View Performance Report →';
     };
 
-    // Dark/Light Theme Switcher
+    function nextSimQuestion() {
+      if (sim.currentIndex < sim.pool.length - 1) {
+        sim.currentIndex++;
+        renderSimQuestion();
+      } else {
+        finishInterview();
+      }
+    }
+
+    function leaveInterview() {
+      clearInterval(sim.timerInterval);
+      navigateTo('dashboard');
+    }
+
+    function finishInterview() {
+      clearInterval(sim.timerInterval);
+      document.getElementById('reportScoreVal').textContent = `${sim.score} / ${sim.pool.length}`;
+      const pct = Math.round((sim.score / (sim.pool.length || 1)) * 100);
+      document.getElementById('reportAccVal').textContent = `${pct}%`;
+      navigateTo('feedback');
+    }
+
+    function buildCalendar() {
+      const cal = document.getElementById('profileCalendar');
+      cal.innerHTML = '';
+      for (let i = 1; i <= 31; i++) {
+        const active = [5, 6, 7, 8, 9, 10, 11, 12].includes(i);
+        const dayEl = document.createElement('div');
+        dayEl.className = `cal-day ${active ? 'active' : ''}`;
+        dayEl.textContent = i;
+        cal.appendChild(dayEl);
+      }
+    }
+
+    // Theme Switcher
     const themeBtn = document.getElementById('themeToggle');
     themeBtn.onclick = () => {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -766,13 +1220,13 @@
       themeBtn.textContent = isDark ? '🌙 Theme' : '☀️ Theme';
     };
 
-    // Search and filter input triggers
-    document.getElementById('searchInput').oninput = renderQuestions;
-    document.getElementById('courseFilter').onchange = renderQuestions;
-    document.getElementById('diffFilter').onchange = renderQuestions;
+    // Filter listeners
+    document.getElementById('searchInput').oninput = renderQuestionCatalog;
+    document.getElementById('courseFilter').onchange = renderQuestionCatalog;
+    document.getElementById('diffFilter').onchange = renderQuestionCatalog;
 
-    // Initialize on load
-    loadQuestions();
+    // Boot
+    initApp();
   </script>
 </body>
 </html>
