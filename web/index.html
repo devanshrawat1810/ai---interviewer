@@ -1,1232 +1,728 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Interviewer — Placement Preparation & Mock Simulation Platform</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #4F46E5;
-      --primary-hover: #4338CA;
-      --primary-light: #EEF2FF;
-      --accent: #0D9488;
-      --accent-light: #CCFBF1;
-      --bg: #F8FAFC;
-      --surface: #FFFFFF;
-      --surface-subtle: #F1F5F9;
-      --border: #E2E8F0;
-      --text: #0F172A;
-      --text-sec: #64748B;
-      --success: #16A34A;
-      --warning: #D97706;
-      --danger: #DC2626;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
-    }
-
-    [data-theme="dark"] {
-      --bg: #0B0F19;
-      --surface: #131B2E;
-      --surface-subtle: #1E293B;
-      --border: #26334D;
-      --text: #F8FAFC;
-      --text-sec: #94A3B8;
-      --primary-light: rgba(79, 70, 229, 0.18);
-      --accent-light: rgba(13, 148, 136, 0.18);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      transition: background-color 0.2s ease, color 0.2s ease;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Top Navigation Bar */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(8px);
-    }
-    .nav-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text);
-      cursor: pointer;
-    }
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-    }
-    .brand-title {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-    .brand-subtitle {
-      font-size: 11px;
-      color: var(--text-sec);
-      font-weight: 600;
-    }
-    .nav-tabs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .nav-tab {
-      background: transparent;
-      border: none;
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-sec);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-    .nav-tab:hover {
-      color: var(--text);
-      background: var(--surface-subtle);
-    }
-    .nav-tab.active {
-      color: var(--primary);
-      background: var(--primary-light);
-    }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: var(--radius-sm);
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      text-decoration: none;
-    }
-    .btn-primary {
-      background-color: var(--primary);
-      color: white;
-    }
-    .btn-primary:hover {
-      background-color: var(--primary-hover);
-      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-      transform: translateY(-1px);
-    }
-    .btn-outline {
-      background-color: transparent;
-      border-color: var(--border);
-      color: var(--text);
-    }
-    .btn-outline:hover {
-      background-color: var(--surface-subtle);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    .btn-sm { padding: 6px 12px; font-size: 13px; }
-
-    /* Layout & View Routing */
-    main {
-      flex: 1;
-      max-width: 1280px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 32px 24px;
-    }
-    .view-screen { display: none; }
-    .view-screen.active { display: block; animation: fadeIn 0.2s ease-in-out; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cards */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .badge-easy { background: #DCFCE7; color: #15803D; }
-    .badge-medium { background: #FEF3C7; color: #B45309; }
-    .badge-hard { background: #FEE2E2; color: #B91C1C; }
-
-    /* Dashboard Layout */
-    .dash-hero {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 24px;
-      margin-bottom: 28px;
-    }
-    @media (max-width: 860px) {
-      .dash-hero { grid-template-columns: 1fr; }
-    }
-    .dash-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    .dash-stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .dash-stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: var(--primary-light);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-    .dash-stat-val { font-size: 26px; font-weight: 800; line-height: 1.1; }
-    .dash-stat-lbl { font-size: 13px; color: var(--text-sec); margin-top: 4px; font-weight: 500; }
-
-    /* Action Tiles Grid */
-    .action-tiles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 18px;
-      margin-bottom: 32px;
-    }
-    .action-tile {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .action-tile:hover {
-      border-color: var(--primary);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-    .tile-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    .tile-icon {
-      font-size: 28px;
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      background: var(--surface-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .tile-title { font-size: 17px; font-weight: 700; color: var(--text); }
-    .tile-desc { font-size: 13px; color: var(--text-sec); margin-top: 4px; line-height: 1.4; }
-
-    /* Daily Challenge Banner */
-    .daily-banner {
-      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(13, 148, 136, 0.08));
-      border: 1px solid rgba(79, 70, 229, 0.25);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    /* Filter & Question Catalog */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-      padding: 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-    }
-    .filter-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-select, .search-input {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-    }
-    .filter-select:focus, .search-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary-light);
-    }
-    .search-input { min-width: 260px; }
-
-    /* Question Cards */
-    .questions-list { display: flex; flex-direction: column; gap: 16px; }
-    .q-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      transition: all 0.15s ease;
-    }
-    .q-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
-    .q-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .q-meta { display: flex; align-items: center; gap: 10px; }
-    .q-track { font-size: 12px; color: var(--text-sec); font-weight: 600; }
-    .q-text { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); line-height: 1.5; }
-    .q-options {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    @media (min-width: 640px) {
-      .q-options { grid-template-columns: 1fr 1fr; }
-    }
-    .opt-btn {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      text-align: left;
-      font-size: 14px;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.15s ease;
-    }
-    .opt-btn:hover:not(:disabled) {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-    .opt-btn.correct {
-      background: #DCFCE7 !important;
-      border-color: #22C55E !important;
-      color: #15803D !important;
-      font-weight: 600;
-    }
-    .opt-btn.incorrect {
-      background: #FEE2E2 !important;
-      border-color: #EF4444 !important;
-      color: #B91C1C !important;
-      font-weight: 600;
-    }
-    .opt-key {
-      display: inline-flex;
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.06);
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .q-explanation {
-      margin-top: 14px;
-      padding: 14px;
-      background: var(--surface-subtle);
-      border-left: 4px solid var(--primary);
-      border-radius: 4px;
-      font-size: 14px;
-      display: none;
-      line-height: 1.5;
-    }
-    .q-explanation.visible { display: block; }
-
-    /* Interactive Live Simulation Screen */
-    .sim-arena {
-      max-width: 840px;
-      margin: 0 auto;
-    }
-    .sim-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-    .sim-timer-pill {
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    /* Leaderboard Table */
-    .table-container {
-      overflow-x: auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 14px;
-    }
-    th {
-      background: var(--surface-subtle);
-      padding: 14px 18px;
-      font-weight: 700;
-      color: var(--text-sec);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--border);
-    }
-    td {
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface-subtle); }
-
-    /* Profile Calendar Grid */
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .cal-day {
-      aspect-ratio: 1;
-      border-radius: var(--radius-sm);
-      background: var(--surface-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-sec);
-    }
-    .cal-day.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
-    }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      padding: 24px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--text-sec);
-      margin-top: auto;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Interviewer — Technical Interview Practice with AI Mentor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-  <!-- Top Navbar Header -->
-  <header>
-    <div class="nav-container">
-      <div class="brand" onclick="navigateTo('dashboard')">
-        <div class="brand-logo">AI</div>
-        <div>
-          <div class="brand-title">AI Interviewer</div>
-          <div class="brand-subtitle">Placement Preparation • Web Platform</div>
-        </div>
+<!-- ========================= GLOBAL NAVBAR ========================== -->
+<header class="global-navbar" id="global-navbar">
+  <div class="nav-container">
+    <a href="#" class="brand-link" id="brand-home">
+      <div class="brand-icon-box">
+        <i class="bi bi-code-square"></i>
+      </div>
+      <span class="brand-text">AI Interviewer</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#landing" class="nav-item" id="nav-link-home"><i class="bi bi-house me-1"></i> Home</a>
+      <a href="#subjects" class="nav-item" id="nav-link-subjects"><i class="bi bi-grid-3x3-gap me-1"></i> Subjects</a>
+      <a href="#ai-mentor" class="nav-item" id="nav-link-mentor"><i class="bi bi-robot me-1"></i> AI Mentor</a>
+      <a href="#challenges" class="nav-item" id="nav-link-challenges"><i class="bi bi-code-slash me-1"></i> Challenges</a>
+      <a href="#features" class="nav-item" id="nav-link-features"><i class="bi bi-stars me-1"></i> Features</a>
+      <a href="#" class="nav-item auth-only" data-nav="start" hidden><i class="bi bi-mic-fill me-1"></i> Mock Interview</a>
+      <a href="#" class="nav-item auth-only" data-nav="daily" hidden><i class="bi bi-calendar-check me-1"></i> Daily</a>
+      <a href="#" class="nav-item auth-only" data-nav="board" hidden><i class="bi bi-trophy me-1"></i> Leaderboard</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="cmdk-trigger" id="cmdk-trigger" type="button" title="Command Palette">
+        <i class="bi bi-search me-1"></i><span>Search…</span><kbd>Ctrl K</kbd>
+      </button>
+
+      <a href="https://github.com/devanshrawat1810/ai---interviewer" target="_blank" rel="noopener" class="nav-icon-link" title="View Source on GitHub">
+        <i class="bi bi-github"></i>
+      </a>
+
+      <button class="nav-icon-btn" id="theme-toggle" type="button" title="Toggle Theme">
+        <i class="bi bi-moon-stars" id="theme-icon"></i>
+      </button>
+
+      <!-- Guest action buttons -->
+      <div id="guest-actions" class="d-flex align-center gap-2">
+        <button type="button" class="btn btn-quiet btn-sm" id="btn-open-login">Sign in</button>
+        <button type="button" class="btn btn-primary btn-nav" id="btn-instant-demo">
+          <i class="bi bi-rocket-takeoff me-1"></i> Start Practicing
+        </button>
       </div>
 
-      <nav class="nav-tabs">
-        <button class="nav-tab active" data-tab="dashboard" onclick="navigateTo('dashboard')">📊 Dashboard</button>
-        <button class="nav-tab" data-tab="courses" onclick="navigateTo('courses')">📚 Curriculum</button>
-        <button class="nav-tab" data-tab="questions" onclick="navigateTo('questions')">📝 Questions (310)</button>
-        <button class="nav-tab" data-tab="leaderboard" onclick="navigateTo('leaderboard')">🏆 Leaderboard</button>
-        <button class="nav-tab" data-tab="profile" onclick="navigateTo('profile')">👤 Profile</button>
-      </nav>
-
-      <div class="nav-actions">
-        <button id="themeToggle" class="btn btn-outline btn-sm">🌙 Theme</button>
-        <button class="btn btn-primary btn-sm" onclick="startInterviewSession('MOCK')">🚀 Quick Mock</button>
+      <!-- Authenticated user pill -->
+      <div id="user-actions" class="d-flex align-center gap-2" hidden>
+        <div class="user-pill" id="user-pill" data-nav="profile">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <span class="user-name" id="who">Candidate</span>
+        </div>
+        <button type="button" class="btn btn-quiet btn-sm" id="sign-out">Sign out</button>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- Main View Area -->
-  <main>
-    <!-- 1. DASHBOARD VIEW -->
-    <section id="view-dashboard" class="view-screen active">
-      <div class="dash-hero">
-        <div class="hero-main">
-          <h1 style="font-size:32px; font-weight:800; line-height:1.2; margin-bottom:8px;" id="userGreeting">
-            Welcome back, Alice!
-          </h1>
-          <p style="color:var(--text-sec); font-size:15px; margin-bottom:20px;" id="userAffiliation">
-            Computer Science & Engineering &bull; MIT College of Engineering
-          </p>
-          <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="startInterviewSession('MOCK')">🎯 Start 10-Question Mock Interview</button>
-            <button class="btn btn-outline" onclick="startInterviewSession('ADAPTIVE')">⚡ Adaptive Practice</button>
+<!-- ========================= LANDING PAGE ========================== -->
+<section id="landing-view" class="landing-view">
+  
+  <!-- HERO SECTION -->
+  <div class="hero-gradient">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="bi bi-robot me-2"></i>Now with AI-Powered Interview Simulation & Evaluation
+        </div>
+        <h1 class="hero-title">
+          Master <span class="text-gradient">Technical Interviews</span><br>
+          with Interactive AI Challenges
+        </h1>
+        <p class="hero-description">
+          The premier interview preparation platform. Practice with 310+ curated challenges across 
+          Algorithms, Data Structures, Modern C++ OOP, Operating Systems, DBMS, Networks, and STAR Behavioral questions.
+        </p>
+
+        <!-- Stats Counter -->
+        <div class="hero-stats">
+          <div class="stat-compact">
+            <span class="stat-number">310+</span>
+            <span class="stat-label">Challenges</span>
+          </div>
+          <div class="stat-compact">
+            <span class="stat-number">8</span>
+            <span class="stat-label">Core Subjects</span>
+          </div>
+          <div class="stat-compact">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Automated Tests</span>
+          </div>
+          <div class="stat-compact">
+            <span class="stat-number">Voice AI</span>
+            <span class="stat-label">Dictation HUD</span>
           </div>
         </div>
 
-        <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
-          <div style="font-size:12px; color:var(--text-sec); font-weight:700; text-transform:uppercase;">Interview Readiness</div>
-          <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px;">
-            <span id="dashSolvedCount" style="font-size:36px; font-weight:800; color:var(--primary);">15</span>
-            <span style="font-size:14px; color:var(--text-sec);">/ 310 Questions</span>
-          </div>
-          <div style="background:var(--border); height:8px; border-radius:4px; overflow:hidden; margin-top:14px;">
-            <div id="dashProgressBar" style="background:linear-gradient(90deg, var(--primary), var(--accent)); width:5%; height:100%; transition:width 0.4s ease;"></div>
-          </div>
+        <!-- Hero Actions -->
+        <div class="hero-actions">
+          <button type="button" class="btn btn-primary btn-hero" id="hero-start-btn">
+            <i class="bi bi-rocket-takeoff me-2"></i>Start Your Journey
+          </button>
+          <button type="button" class="btn btn-outline btn-hero" id="hero-demo-btn">
+            <i class="bi bi-lightning-charge me-2"></i>1-Click Guest Pass
+          </button>
         </div>
       </div>
 
-      <!-- Quick Metrics Row -->
-      <div class="dash-stats-grid">
-        <div class="dash-stat-card">
-          <div class="dash-stat-icon">🔥</div>
-          <div>
-            <div class="dash-stat-val" id="streakVal">7 Days</div>
-            <div class="dash-stat-lbl">Active Learning Streak</div>
+      <!-- Hero Visual: Simulated IDE Terminal Mockup -->
+      <div class="hero-visual">
+        <div class="custom-code-card">
+          <div class="code-card-header">
+            <div class="window-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="code-file-name"><i class="bi bi-file-earmark-code me-1"></i> Solution.cpp</div>
+            <div class="compiler-badge">C++17 • MinGW GCC</div>
           </div>
-        </div>
-        <div class="dash-stat-card">
-          <div class="dash-stat-icon" style="background:var(--accent-light); color:var(--accent);">⭐</div>
-          <div>
-            <div class="dash-stat-val" id="scoreVal">520 pts</div>
-            <div class="dash-stat-lbl">Total Placement Score</div>
-          </div>
-        </div>
-        <div class="dash-stat-card">
-          <div class="dash-stat-icon" style="background:#DCFCE7; color:#15803D;">🎯</div>
-          <div>
-            <div class="dash-stat-val" id="accuracyVal">92%</div>
-            <div class="dash-stat-lbl">Problem Accuracy Rate</div>
-          </div>
-        </div>
-        <div class="dash-stat-card">
-          <div class="dash-stat-icon" style="background:#FEF3C7; color:#B45309;">🎖️</div>
-          <div>
-            <div class="dash-stat-val" id="badgeVal">3 Badges</div>
-            <div class="dash-stat-lbl">Achievements Unlocked</div>
-          </div>
-        </div>
-      </div>
+          <div class="code-card-body">
+            <pre class="code-lines"><code><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;unordered_map&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;memory&gt;</span>
 
-      <!-- Daily Challenge Banner -->
-      <div class="daily-banner">
-        <div>
-          <div style="font-size:12px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.04em;">Today's Daily Challenge</div>
-          <h3 style="font-size:18px; font-weight:700; margin-top:4px;">C++ Virtual Tables & Polymorphic Binding</h3>
-          <p style="font-size:13px; color:var(--text-sec); margin-top:2px;">Complete today's challenge to maintain your streak and earn +50 bonus placement points.</p>
-        </div>
-        <button class="btn btn-primary" onclick="startDailyChallenge()">Solve Challenge (+50 pts)</button>
-      </div>
+<span class="kw">class</span> <span class="cls">LRUCache</span> {
+<span class="kw">private</span>:
+    <span class="kw">struct</span> <span class="cls">Node</span> { <span class="type">int</span> key, val; ... };
+    <span class="cls">std::unordered_map</span>&lt;<span class="type">int</span>, Node*&gt; cache;
 
-      <!-- Action Launchers Grid -->
-      <h2 style="font-size:20px; font-weight:800; margin-bottom:16px;">Training & Simulation Modes</h2>
-      <div class="action-tiles-grid">
-        <div class="action-tile" onclick="startInterviewSession('MOCK')">
-          <div class="tile-header">
-            <div class="tile-icon">🚀</div>
-            <div>
-              <div class="tile-title">Full Mock Interview</div>
-              <div class="tile-desc">10-question structured ramp (Easy &rarr; Medium &rarr; Hard) simulating top tech hiring rounds.</div>
+<span class="kw">public</span>:
+    <span class="type">int</span> <span class="fn">get</span>(<span class="type">int</span> key) {
+        <span class="kw">if</span> (cache.find(key) == cache.end()) <span class="kw">return</span> -1;
+        moveToHead(cache[key]);
+        <span class="kw">return</span> cache[key]-&gt;val;
+    }
+};</code></pre>
+          </div>
+          <div class="code-card-footer">
+            <div class="float-status-pill success">
+              <i class="bi bi-check-circle-fill me-1"></i> 100% Test Cases Passed
+            </div>
+            <div class="float-status-pill ai">
+              <i class="bi bi-cpu-fill me-1"></i> AI Complexity: O(1) Optimal
             </div>
           </div>
-          <span style="font-size:13px; font-weight:700; color:var(--primary);">Launch Simulation &rarr;</span>
-        </div>
-
-        <div class="action-tile" onclick="startInterviewSession('ADAPTIVE')">
-          <div class="tile-header">
-            <div class="tile-icon">⚡</div>
-            <div>
-              <div class="tile-title">Adaptive Practice Session</div>
-              <div class="tile-desc">5 dynamic questions adapting difficulty in real-time based on your problem-solving accuracy.</div>
-            </div>
-          </div>
-          <span style="font-size:13px; font-weight:700; color:var(--primary);">Start Adaptive Track &rarr;</span>
-        </div>
-
-        <div class="action-tile" onclick="navigateTo('courses')">
-          <div class="tile-header">
-            <div class="tile-icon">📚</div>
-            <div>
-              <div class="tile-title">Curriculum & Subject Tracks</div>
-              <div class="tile-desc">Target specialized topics: C++ OOP, Data Structures, Operating Systems, DBMS, and ECE.</div>
-            </div>
-          </div>
-          <span style="font-size:13px; font-weight:700; color:var(--primary);">Explore Curriculum &rarr;</span>
-        </div>
-
-        <div class="action-tile" onclick="navigateTo('resume')">
-          <div class="tile-header">
-            <div class="tile-icon">📄</div>
-            <div>
-              <div class="tile-title">Resume-Based Mock Round</div>
-              <div class="tile-desc">Upload your resume summary to generate targeted questions matching your projects and tech stack.</div>
-            </div>
-          </div>
-          <span style="font-size:13px; font-weight:700; color:var(--primary);">Configure Resume Flow &rarr;</span>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- 2. CURRICULUM TRACKS VIEW -->
-    <section id="view-courses" class="view-screen">
-      <div style="margin-bottom:24px;">
-        <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Placement Curriculum & Tracks</h1>
-        <p style="color:var(--text-sec);">Choose a specialization to focus your practice and unlock progressive difficulty tiers.</p>
+  <!-- SECTION SEPARATOR -->
+  <div class="section-separator">
+    <div class="separator-line">
+      <div class="separator-icon"><i class="bi bi-robot"></i></div>
+    </div>
+  </div>
+
+  <!-- AI MENTOR SECTION (matches gointerview.dev) -->
+  <section class="ai-mentor-section" id="ai-mentor">
+    <div class="section-container">
+      <div class="section-heading text-center">
+        <div class="badge-pill mb-2"><i class="bi bi-robot me-1"></i> Powered by Evaluation Engine</div>
+        <h2 class="display-title">Meet Your AI Mentor</h2>
+        <p class="section-sub">Learn C++ system architecture and master interview questions with personalized AI guidance and instant code reviews.</p>
       </div>
 
-      <div class="action-tiles-grid">
-        <div class="action-tile">
-          <div>
-            <div class="tile-header">
-              <div class="tile-icon">💻</div>
-              <div>
-                <div class="tile-title">Computer Science (CSE)</div>
-                <div class="tile-desc">C++ OOP, Data Structures, Algorithms, Operating Systems, DBMS, and System Design.</div>
+      <div class="mentor-grid">
+        <!-- Interactive AI Chat Demo -->
+        <div class="mentor-card ai-chat-demo">
+          <div class="chat-card-header">
+            <div class="chat-avatar"><i class="bi bi-robot"></i></div>
+            <div class="chat-meta">
+              <h4 class="m-0">AI Mentor</h4>
+              <span class="muted-small">Interactive Architecture Discussion</span>
+            </div>
+          </div>
+          <div class="chat-messages">
+            <div class="chat-msg ai-msg">
+              <div class="msg-bubble">
+                👋 <strong>Welcome!</strong> I'm your technical interviewer and code reviewer. What topic would you like to tackle today?
               </div>
             </div>
-            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>180+ Questions</strong> &bull; Complete Placement Track</div>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('CSE', 'MOCK')">Mock Round</button>
-            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('CSE', 'ADAPTIVE')">Practice</button>
-          </div>
-        </div>
-
-        <div class="action-tile">
-          <div>
-            <div class="tile-header">
-              <div class="tile-icon">⚡</div>
-              <div>
-                <div class="tile-title">Electronics & Embedded (ECE)</div>
-                <div class="tile-desc">Digital Logic, Microcontrollers, Sequential Circuits, I2C/SPI Protocols, RTOS.</div>
+            <div class="chat-msg user-msg">
+              <div class="msg-bubble">
+                Can you explain std::unique_ptr vs std::shared_ptr and RAII memory safety in C++?
               </div>
             </div>
-            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>40+ Questions</strong> &bull; Hardware Engineering</div>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('ECE', 'MOCK')">Mock Round</button>
-            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('ECE', 'ADAPTIVE')">Practice</button>
-          </div>
-        </div>
-
-        <div class="action-tile">
-          <div>
-            <div class="tile-header">
-              <div class="tile-icon">📈</div>
-              <div>
-                <div class="tile-title">Commerce & Finance</div>
-                <div class="tile-desc">Financial Accounting, Balance Sheets, Profit & Loss Statements, Cost Principles.</div>
+            <div class="chat-msg ai-msg">
+              <div class="msg-bubble">
+                Excellent question! <code>std::unique_ptr</code> models exclusive ownership with zero overhead (move-only):
+                <div class="code-snippet-box">
+                  <code>auto ptr = std::make_unique&lt;Resource&gt;();<br>// Exclusive ownership; automatically freed upon scope exit</code>
+                </div>
+                In contrast, <code>std::shared_ptr</code> maintains an atomic reference-counted control block. Prefer <code>std::unique_ptr</code> by default!
               </div>
             </div>
-            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>30+ Questions</strong> &bull; Business & Accounting</div>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('COMMERCE', 'MOCK')">Mock Round</button>
-            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('COMMERCE', 'ADAPTIVE')">Practice</button>
           </div>
         </div>
 
-        <div class="action-tile">
-          <div>
-            <div class="tile-header">
-              <div class="tile-icon">🧠</div>
-              <div>
-                <div class="tile-title">General Aptitude & Behavioral HR</div>
-                <div class="tile-desc">Quantitative Aptitude, Logical Reasoning, STAR Behavioral Interview Scenarios.</div>
+        <!-- AI Code Review Card -->
+        <div class="mentor-card ai-review-demo">
+          <div class="chat-card-header">
+            <div class="chat-avatar review-avatar"><i class="bi bi-search"></i></div>
+            <div class="chat-meta">
+              <h4 class="m-0">AI Code Reviewer</h4>
+              <span class="muted-small">Instant Test & Complexity Feedback</span>
+            </div>
+          </div>
+          <div class="review-body">
+            <div class="review-scores-row">
+              <span class="score-badge success"><i class="bi bi-check2 me-1"></i> Correctness: 100%</span>
+              <span class="score-badge info"><i class="bi bi-speedometer2 me-1"></i> Score: 94/100</span>
+              <span class="score-badge optimal"><i class="bi bi-graph-up me-1"></i> O(N) Time</span>
+            </div>
+            <div class="review-card-content">
+              <p class="review-p"><strong>✅ Optimal Implementation:</strong> Your hash-map frequency counter solves the problem in a single pass with linear space complexity.</p>
+              <div class="review-tip-box">
+                <div class="tip-title"><i class="bi bi-lightbulb-fill me-1"></i> Interviewer Follow-Up:</div>
+                <p class="tip-desc m-0">"Can you handle an in-place version with O(1) auxiliary space if the input vector is guaranteed to be sorted?"</p>
               </div>
             </div>
-            <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;"><strong>60+ Questions</strong> &bull; Universal Campus Placement</div>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button class="btn btn-primary btn-sm" onclick="filterAndPractice('COMMON', 'MOCK')">Mock Round</button>
-            <button class="btn btn-outline btn-sm" onclick="filterAndPractice('COMMON', 'ADAPTIVE')">Practice</button>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- 3. QUESTION BANK (310 QUESTIONS) VIEW -->
-    <section id="view-questions" class="view-screen">
-      <div style="margin-bottom:24px;">
-        <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Comprehensive Question Catalog</h1>
-        <p style="color:var(--text-sec);">Browse, filter, and practice all 310 placement interview questions with client-side verification.</p>
+      <div class="text-center mt-4">
+        <button type="button" class="btn btn-primary btn-lg" id="mentor-cta-btn">
+          <i class="bi bi-mic-fill me-2"></i>Start Mock Interview with AI
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION SEPARATOR -->
+  <div class="section-separator">
+    <div class="separator-line">
+      <div class="separator-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+    </div>
+  </div>
+
+  <!-- SUBJECTS & KNOWLEDGE DOMAINS SECTION -->
+  <section class="subjects-section" id="subjects">
+    <div class="section-container">
+      <div class="section-heading text-center">
+        <div class="badge-pill mb-2"><i class="bi bi-folder2-open me-1"></i> Core Curriculum & Tracks</div>
+        <h2 class="display-title">Curated Subjects & Knowledge Domains</h2>
+        <p class="section-sub">Comprehensive topic-wise practice modules with 310+ questions tailored for FAANG, HFT, and top-tier technical interviews.</p>
       </div>
 
-      <!-- Filters Toolbar -->
-      <div class="filter-bar">
-        <div class="filter-group">
-          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search text, topic, keywords..." />
-          <select id="courseFilter" class="filter-select">
-            <option value="ALL">All Curriculum Tracks</option>
-            <option value="CSE">CSE (Computer Science)</option>
-            <option value="ECE">ECE (Electronics & Embedded)</option>
-            <option value="COMMERCE">Commerce & Accounting</option>
-            <option value="COMMON">Common (Aptitude & HR)</option>
-          </select>
-          <select id="diffFilter" class="filter-select">
-            <option value="ALL">All Difficulties</option>
-            <option value="EASY">Easy</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HARD">Hard</option>
-          </select>
-        </div>
-        <div id="countSummary" style="font-size:13px; color:var(--text-sec); font-weight:600;">
-          Showing 310 questions
-        </div>
-      </div>
-
-      <!-- Questions List -->
-      <div id="questionsContainer" class="questions-list"></div>
-    </section>
-
-    <!-- 4. LIVE INTERVIEW SIMULATION ARENA VIEW -->
-    <section id="view-interview" class="view-screen">
-      <div class="sim-arena">
-        <div class="sim-header">
-          <div>
-            <span class="badge badge-medium" id="simDiffBadge">MEDIUM</span>
-            <span style="font-size:13px; color:var(--text-sec); margin-left:12px;" id="simTrackName">Full Mock Interview</span>
+      <div class="subjects-grid">
+        <!-- Algorithms -->
+        <div class="subject-card" data-subject="algo">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-cyan"><i class="bi bi-diagram-3"></i></div>
+            <span class="subject-count-badge">34 Questions</span>
           </div>
-          <div class="sim-timer-pill" id="simTimer">⏱️ 02:45</div>
-        </div>
-
-        <div class="card" style="margin-bottom:20px;">
-          <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:13px; color:var(--text-sec);">
-            <span id="simCounter">Question 1 of 10</span>
-            <span id="simScoreTrack">Current Score: 0</span>
+          <h3 class="subject-title">Algorithms & Problem Solving</h3>
+          <p class="subject-desc">Master sliding window, dynamic programming, two pointers, graph theory, topological sort, and greedy strategies.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">DP</span>
+            <span class="topic-tag">Graphs</span>
+            <span class="topic-tag">Sliding Window</span>
+            <span class="topic-tag">Two Pointers</span>
           </div>
-          <h2 id="simQuestionTitle" style="font-size:19px; font-weight:700; margin-bottom:20px; line-height:1.4;">
-            Question title...
-          </h2>
-          <div id="simOptionsArea" class="q-options" style="grid-template-columns:1fr; margin-bottom:20px;"></div>
-          <div id="simExplanationArea" class="q-explanation"></div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="algo">
+            Practice Algorithms <i class="bi bi-arrow-right ms-1"></i>
+          </button>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <button class="btn btn-outline" onclick="leaveInterview()">Exit Interview</button>
-          <button id="simNextButton" class="btn btn-primary" style="display:none;" onclick="nextSimQuestion()">Next Question &rarr;</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. FEEDBACK & SCORE REPORT VIEW -->
-    <section id="view-feedback" class="view-screen">
-      <div style="max-width:760px; margin:0 auto;">
-        <div class="card" style="text-align:center; padding:40px 32px; margin-bottom:24px;">
-          <div style="font-size:48px; margin-bottom:12px;">🎉</div>
-          <h1 style="font-size:28px; font-weight:800; margin-bottom:8px;">Interview Session Completed!</h1>
-          <p style="color:var(--text-sec); margin-bottom:24px;">Here is your performance breakdown and placement readiness diagnosis.</p>
-
-          <div style="display:flex; justify-content:center; gap:32px; margin-bottom:28px;">
-            <div>
-              <div id="reportScoreVal" style="font-size:42px; font-weight:800; color:var(--primary);">8 / 10</div>
-              <div style="font-size:13px; color:var(--text-sec); font-weight:600;">Total Questions Correct</div>
-            </div>
-            <div style="width:1px; background:var(--border);"></div>
-            <div>
-              <div id="reportAccVal" style="font-size:42px; font-weight:800; color:var(--accent);">80%</div>
-              <div style="font-size:13px; color:var(--text-sec); font-weight:600;">Overall Accuracy</div>
-            </div>
+        <!-- Data Structures -->
+        <div class="subject-card" data-subject="ds">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-emerald"><i class="bi bi-layers"></i></div>
+            <span class="subject-count-badge">27 Questions</span>
           </div>
+          <h3 class="subject-title">Data Structures</h3>
+          <p class="subject-desc">Trie prefix trees, binary tree lowest common ancestor, min-heaps, doubly linked lists, monotonic stacks, and hash tables.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">Tries</span>
+            <span class="topic-tag">Binary Trees</span>
+            <span class="topic-tag">Heaps</span>
+            <span class="topic-tag">Stacks & Queues</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="ds">
+            Practice Data Structures <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
 
-          <div style="display:flex; justify-content:center; gap:12px;">
-            <button class="btn btn-primary" onclick="startInterviewSession('MOCK')">🔄 Retry Another Mock</button>
-            <button class="btn btn-outline" onclick="navigateTo('dashboard')">Return to Dashboard</button>
+        <!-- C++ & OOP -->
+        <div class="subject-card" data-subject="oop">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-violet"><i class="bi bi-filetype-cpp"></i></div>
+            <span class="subject-count-badge">29 Questions</span>
+          </div>
+          <h3 class="subject-title">Modern C++ & OOP</h3>
+          <p class="subject-desc">RAII, Rule of 5, smart pointer cycle breaking, VTABLE/VPTR dispatch, move semantics, RVO, and perfect forwarding.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">RAII</span>
+            <span class="topic-tag">Smart Pointers</span>
+            <span class="topic-tag">VTABLE</span>
+            <span class="topic-tag">Templates</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="oop">
+            Practice C++ & OOP <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+
+        <!-- Operating Systems -->
+        <div class="subject-card" data-subject="os">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-amber"><i class="bi bi-cpu"></i></div>
+            <span class="subject-count-badge">27 Questions</span>
+          </div>
+          <h3 class="subject-title">Operating Systems</h3>
+          <p class="subject-desc">Virtual memory, TLB misses, multi-level paging, Mutex vs Semaphore, Coffman deadlock conditions, Copy-on-Write, and context switching.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">Virtual Memory</span>
+            <span class="topic-tag">Concurrency</span>
+            <span class="topic-tag">Deadlocks</span>
+            <span class="topic-tag">Context Switching</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="os">
+            Practice Operating Systems <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+
+        <!-- DBMS -->
+        <div class="subject-card" data-subject="dbms">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-blue"><i class="bi bi-database"></i></div>
+            <span class="subject-count-badge">27 Questions</span>
+          </div>
+          <h3 class="subject-title">Database Systems (DBMS)</h3>
+          <p class="subject-desc">B+ Tree vs Hash indexing, ACID transaction isolation levels, write-ahead logging (WAL), BCNF normalization, and sharding.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">B+ Trees</span>
+            <span class="topic-tag">ACID & MVCC</span>
+            <span class="topic-tag">WAL</span>
+            <span class="topic-tag">Sharding</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="dbms">
+            Practice DBMS <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+
+        <!-- Computer Networks -->
+        <div class="subject-card" data-subject="networks">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-rose"><i class="bi bi-globe"></i></div>
+            <span class="subject-count-badge">27 Questions</span>
+          </div>
+          <h3 class="subject-title">Computer Networks</h3>
+          <p class="subject-desc">TCP 3-way handshake, HTTP/2 vs HTTP/3 QUIC, TLS 1.3 1-RTT handshake, recursive DNS resolution, and WebSockets vs SSE.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">TCP / IP</span>
+            <span class="topic-tag">HTTP/3 QUIC</span>
+            <span class="topic-tag">TLS 1.3</span>
+            <span class="topic-tag">DNS</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="networks">
+            Practice Networks <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+
+        <!-- Behavioral & Leadership -->
+        <div class="subject-card" data-subject="hr">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-teal"><i class="bi bi-chat-quote"></i></div>
+            <span class="subject-count-badge">30 Questions</span>
+          </div>
+          <h3 class="subject-title">Behavioral & STAR Leadership</h3>
+          <p class="subject-desc">Conflict resolution, engineering leadership, deadline triage, failure postmortems, mentorship, and disagree-and-commit culture.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">STAR Method</span>
+            <span class="topic-tag">Conflict</span>
+            <span class="topic-tag">Leadership</span>
+            <span class="topic-tag">Postmortems</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="hr">
+            Practice Behavioral <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+
+        <!-- Aptitude & Reasoning -->
+        <div class="subject-card" data-subject="aptitude">
+          <div class="subject-card-top">
+            <div class="subject-icon-box icon-orange"><i class="bi bi-calculator"></i></div>
+            <span class="subject-count-badge">43 Questions</span>
+          </div>
+          <h3 class="subject-title">Quantitative Aptitude & Logic</h3>
+          <p class="subject-desc">Combinatorics, probability theory, logical deductions, data interpretation, and algorithmic brain teasers.</p>
+          <div class="subject-topics-wrap">
+            <span class="topic-tag">Probability</span>
+            <span class="topic-tag">Combinatorics</span>
+            <span class="topic-tag">Critical Logic</span>
+            <span class="topic-tag">Puzzles</span>
+          </div>
+          <button class="btn btn-outline btn-block subject-btn" data-explore-subject="aptitude">
+            Practice Aptitude <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION SEPARATOR -->
+  <div class="section-separator">
+    <div class="separator-line">
+      <div class="separator-icon"><i class="bi bi-lightning-charge"></i></div>
+    </div>
+  </div>
+
+  <!-- FEATURES SECTION -->
+  <section class="features-section" id="features">
+    <div class="section-container">
+      <div class="section-heading text-center">
+        <h2 class="display-title">Why Developers Choose AI Interviewer</h2>
+        <p class="section-sub">A production-grade environment built to simulate real FAANG / Tier-1 engineering screening rounds.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon icon-cyan"><i class="bi bi-terminal"></i></div>
+          <h3 class="feature-title">Zero Setup In-Browser IDE</h3>
+          <p class="feature-desc">Code directly in your browser with synchronized line numbers, tab indentation, and full syntax highlighting.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-violet"><i class="bi bi-cpu"></i></div>
+          <h3 class="feature-title">Real-Time Evaluation Engine</h3>
+          <p class="feature-desc">Automated test runners analyze your solutions against edge cases, validating both logic and asymptotic runtime.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-rose"><i class="bi bi-mic-fill"></i></div>
+          <h3 class="feature-title">Voice AI Mock Interviewer</h3>
+          <p class="feature-desc">Speak directly to the AI with real-time speech-to-text dictation. Practice behavioral and architecture questions hands-free.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-emerald"><i class="bi bi-collection"></i></div>
+          <h3 class="feature-title">284+ Comprehensive Questions</h3>
+          <p class="feature-desc">Extensive curated bank spanning Algorithms, Data Structures, Modern C++ OOP, System Design, and STAR leadership.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-amber"><i class="bi bi-pie-chart-fill"></i></div>
+          <h3 class="feature-title">Radar Competency Matrix</h3>
+          <p class="feature-desc">Post-interview scorecards break down your performance across Communication, Technical Depth, Problem Solving, and STAR Structure.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-blue"><i class="bi bi-trophy-fill"></i></div>
+          <h3 class="feature-title">Leaderboard & Streaks</h3>
+          <p class="feature-desc">Keep your engineering consistency sharp with daily challenges, streak counters, and global student leaderboards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION SEPARATOR -->
+  <div class="section-separator">
+    <div class="separator-line">
+      <div class="separator-icon"><i class="bi bi-code-slash"></i></div>
+    </div>
+  </div>
+
+  <!-- CHALLENGES SHOWCASE SECTION -->
+  <section class="challenges-section" id="challenges">
+    <div class="section-container">
+      <div class="section-heading text-center">
+        <div class="badge-pill mb-2"><i class="bi bi-code-slash me-1"></i> Interactive Question Bank</div>
+        <h2 class="display-title">Explore Coding & System Challenges</h2>
+        <p class="section-sub">Browse 284+ questions and dive straight into the code editor.</p>
+      </div>
+
+      <!-- Track Tabs -->
+      <div class="track-tabs-container">
+        <button class="track-tab active" data-track="all">All (284)</button>
+        <button class="track-tab" data-track="Algorithms">Algorithms (20)</button>
+        <button class="track-tab" data-track="Data Structures">Data Structures (15)</button>
+        <button class="track-tab" data-track="C++ OOP">C++ & OOP (14)</button>
+        <button class="track-tab" data-track="HR & Behavioral">Behavioral STAR (20)</button>
+      </div>
+
+      <!-- Featured Challenges Grid -->
+      <div class="challenge-preview-grid" id="challenge-preview-grid">
+        <!-- Rendered dynamically or populated with top canonical problems -->
+        <div class="preview-card" data-problem="two-sum">
+          <div class="preview-card-top">
+            <span class="diff-tag easy">Easy</span>
+            <span class="preview-track">Algorithms</span>
+          </div>
+          <h4 class="preview-title">Two Sum</h4>
+          <p class="preview-desc">Find two numbers in an array that add up to a specific target in O(N) linear time using hash tables.</p>
+          <div class="preview-footer">
+            <span class="preview-meta"><i class="bi bi-file-code me-1"></i> Coding</span>
+            <button class="btn btn-primary btn-sm preview-solve-btn">Solve Challenge <i class="bi bi-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <div class="preview-card" data-problem="lru-cache">
+          <div class="preview-card-top">
+            <span class="diff-tag medium">Medium</span>
+            <span class="preview-track">Algorithms</span>
+          </div>
+          <h4 class="preview-title">LRU Cache</h4>
+          <p class="preview-desc">Design a data structure that implements the Least Recently Used (LRU) cache policy with O(1) get and put operations.</p>
+          <div class="preview-footer">
+            <span class="preview-meta"><i class="bi bi-file-code me-1"></i> Coding</span>
+            <button class="btn btn-primary btn-sm preview-solve-btn">Solve Challenge <i class="bi bi-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <div class="preview-card" data-problem="trapping-rain-water">
+          <div class="preview-card-top">
+            <span class="diff-tag hard">Hard</span>
+            <span class="preview-track">Algorithms</span>
+          </div>
+          <h4 class="preview-title">Trapping Rain Water</h4>
+          <p class="preview-desc">Given n non-negative integers representing elevation map, compute how much water it can trap after raining.</p>
+          <div class="preview-footer">
+            <span class="preview-meta"><i class="bi bi-file-code me-1"></i> Coding</span>
+            <button class="btn btn-primary btn-sm preview-solve-btn">Solve Challenge <i class="bi bi-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <div class="preview-card" data-problem="cpp-oop-raii-rule-five">
+          <div class="preview-card-top">
+            <span class="diff-tag medium">Medium</span>
+            <span class="preview-track">C++ OOP</span>
+          </div>
+          <h4 class="preview-title">RAII and Rule of Five / Zero</h4>
+          <p class="preview-desc">Explain resource ownership, destructor semantics, and move operations under the C++ Rule of Five.</p>
+          <div class="preview-footer">
+            <span class="preview-meta"><i class="bi bi-chat-left-text me-1"></i> Text</span>
+            <button class="btn btn-primary btn-sm preview-solve-btn">Solve Challenge <i class="bi bi-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <div class="preview-card" data-problem="hr-conflict-resolution">
+          <div class="preview-card-top">
+            <span class="diff-tag medium">Medium</span>
+            <span class="preview-track">Behavioral</span>
+          </div>
+          <h4 class="preview-title">Engineering Conflict Resolution</h4>
+          <p class="preview-desc">Describe a technical disagreement regarding system design and how you aligned team members using data.</p>
+          <div class="preview-footer">
+            <span class="preview-meta"><i class="bi bi-mic me-1"></i> Voice / STAR</span>
+            <button class="btn btn-primary btn-sm preview-solve-btn">Solve Challenge <i class="bi bi-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <div class="preview-card" data-problem="coin-change">
+          <div class="preview-card-top">
+            <span class="diff-tag medium">Medium</span>
+            <span class="preview-track">Algorithms</span>
+          </div>
+          <h4 class="preview-title">Coin Change (Dynamic Programming)</h4>
+          <p class="preview-desc">Compute the fewest number of coins that you need to make up an amount using optimal subproblems.</p>
+          <div class="preview-footer">
+            <span class="preview-meta"><i class="bi bi-file-code me-1"></i> Coding</span>
+            <button class="btn btn-primary btn-sm preview-solve-btn">Solve Challenge <i class="bi bi-arrow-right"></i></button>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- 6. LEADERBOARD VIEW -->
-    <section id="view-leaderboard" class="view-screen">
-      <div style="margin-bottom:24px;">
-        <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Campus Placement Leaderboard</h1>
-        <p style="color:var(--text-sec);">Top performing candidates ranked by placement score, daily streaks, and accuracy.</p>
+      <div class="text-center mt-4">
+        <button class="btn btn-outline btn-lg" id="view-all-challenges-btn">
+          View All 284 Challenges in Workspace <i class="bi bi-arrow-right ms-1"></i>
+        </button>
       </div>
+    </div>
+  </section>
 
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Student Name</th>
-              <th>College & Branch</th>
-              <th>Track</th>
-              <th>Streak</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboardBody">
-            <tr>
-              <td><strong>#1 🥇</strong></td>
-              <td><strong>Alice Johnson</strong> (You)</td>
-              <td>MIT College of Engineering &bull; CSE</td>
-              <td>CSE</td>
-              <td>🔥 7d</td>
-              <td><strong>520 pts</strong></td>
-            </tr>
-            <tr>
-              <td><strong>#2 🥈</strong></td>
-              <td>Bob Smith</td>
-              <td>Stanford Tech &bull; ECE</td>
-              <td>ECE</td>
-              <td>🔥 3d</td>
-              <td><strong>280 pts</strong></td>
-            </tr>
-            <tr>
-              <td><strong>#3 🥉</strong></td>
-              <td>Carol Davis</td>
-              <td>Berkeley Engineering &bull; CSE</td>
-              <td>CSE</td>
-              <td>🔥 5d</td>
-              <td><strong>240 pts</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 7. RESUME FLOW VIEW -->
-    <section id="view-resume" class="view-screen">
-      <div style="max-width:760px; margin:0 auto;">
-        <div style="margin-bottom:24px;">
-          <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Resume-Driven Interview Simulator</h1>
-          <p style="color:var(--text-sec);">Provide your technical background, key projects, or paste your resume text to tailor targeted questions.</p>
-        </div>
-
-        <div class="card">
-          <label style="font-size:14px; font-weight:700; margin-bottom:8px; display:block;">Paste Resume Summary / Technical Skills:</label>
-          <textarea id="resumeInput" style="width:100%; min-height:160px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; color:var(--text); font-family:inherit; font-size:14px; outline:none; margin-bottom:16px;" placeholder="Proficient in C++, Object-Oriented Design, STL, and Data Structures. Developed a high-performance LRU Cache and multi-threaded server..."></textarea>
-
-          <button class="btn btn-primary" onclick="launchResumeMock()">Generate Tailored Mock Interview &rarr;</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 8. PROFILE VIEW -->
-    <section id="view-profile" class="view-screen">
-      <div style="max-width:800px; margin:0 auto;">
-        <div style="margin-bottom:24px;">
-          <h1 style="font-size:28px; font-weight:800; margin-bottom:6px;">Candidate Profile & Activity Calendar</h1>
-          <p style="color:var(--text-sec);">Manage your placement credentials and view your learning consistency.</p>
-        </div>
-
-        <div style="display:grid; grid-template-columns:300px 1fr; gap:24px;">
-          <div class="card" style="text-align:center;">
-            <div style="width:72px; height:72px; border-radius:36px; background:linear-gradient(135deg, var(--primary), var(--accent)); color:white; font-size:28px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">AJ</div>
-            <h2 style="font-size:18px; font-weight:800;">Alice Johnson</h2>
-            <p style="font-size:13px; color:var(--text-sec); margin-top:2px;">alice@college.edu</p>
-            <div style="margin-top:20px; text-align:left; font-size:13px;">
-              <div style="margin-bottom:8px;"><strong>Track:</strong> Computer Science (CSE)</div>
-              <div style="margin-bottom:8px;"><strong>College:</strong> MIT College of Engineering</div>
-              <div style="margin-bottom:8px;"><strong>Department:</strong> CSE</div>
-            </div>
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-link mb-2">
+            <i class="bi bi-code-square brand-icon"></i>
+            <span class="brand-text">AI Interviewer</span>
           </div>
-
-          <div class="card">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">October 2026 Activity Streak Calendar</h3>
-            <p style="font-size:13px; color:var(--text-sec); margin-bottom:16px;">Green tiles indicate active interview preparation sessions and daily challenges.</p>
-            <div class="calendar-grid" id="profileCalendar"></div>
-          </div>
+          <p class="footer-desc">Professional interview preparation and technical screening simulator with real-time AI code reviews.</p>
+        </div>
+        <div class="footer-links-group">
+          <h5>Platform</h5>
+          <a href="#landing">Home</a>
+          <a href="#ai-mentor">AI Mentor</a>
+          <a href="#challenges">Challenges</a>
+          <a href="#features">Features</a>
+        </div>
+        <div class="footer-links-group">
+          <h5>Tracks</h5>
+          <a href="#challenges">DSA & Algorithms</a>
+          <a href="#challenges">Modern C++ OOP</a>
+          <a href="#challenges">System Architecture</a>
+          <a href="#challenges">STAR Behavioral</a>
         </div>
       </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer>
-    <p>AI Interviewer Platform &bull; Standalone Web Edition &bull; C++ OOP Simulation Engine</p>
+      <div class="footer-bottom">
+        <p class="m-0">&copy; 2026 AI Interviewer. Open-source engineering practice platform.</p>
+        <div class="footer-socials">
+          <a href="https://github.com/devanshrawat1810/ai---interviewer" target="_blank" rel="noopener"><i class="bi bi-github"></i></a>
+        </div>
+      </div>
+    </div>
   </footer>
 
-  <!-- Application Engine -->
-  <script>
-    let allQuestions = [];
-    let userState = {
-      name: "Alice Johnson",
-      email: "alice@college.edu",
-      college: "MIT College of Engineering",
-      branch: "CSE",
-      streak: 7,
-      score: 520,
-      solved: 15,
-      correct: 14,
-      userAnswers: {}
-    };
+</section>
 
-    // Navigation Router
-    function navigateTo(screenId) {
-      document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active'));
-      const target = document.getElementById('view-' + screenId);
-      if (target) target.classList.add('active');
+<!-- ============================ AUTH MODAL ============================ -->
+<section id="login-view" class="auth-modal-backdrop" hidden>
+  <div class="auth-modal-dialog">
+    <button type="button" class="modal-close-btn" id="modal-close-btn" title="Close">&times;</button>
+    
+    <div class="auth-header">
+      <div class="auth-icon-circle"><i class="bi bi-person-badge"></i></div>
+      <h2 class="auth-title" id="auth-title">Welcome to AI Interviewer</h2>
+      <p class="auth-sub" id="login-sub">Sign in or jump straight in with an instant guest pass.</p>
+    </div>
 
-      document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.getAttribute('data-tab') === screenId);
-      });
-      window.scrollTo(0, 0);
-    }
+    <!-- Quick 1-Click Guest Button -->
+    <div class="quick-pass-box">
+      <button type="button" class="btn btn-quick-pass" id="btn-modal-guest">
+        <i class="bi bi-lightning-charge-fill me-2"></i> Instant Guest Access (1-Click Demo)
+      </button>
+      <div class="auth-divider"><span>or with credentials</span></div>
+    </div>
 
-    // Load Data
-    async function initApp() {
-      try {
-        const res = await fetch('./data/questions.json');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        allQuestions = await res.json();
-        renderQuestionCatalog();
-      } catch (err) {
-        console.error('Failed to load questions.json', err);
-      }
-      buildCalendar();
-    }
+    <form id="login-form" autocomplete="off">
+      <label class="field">
+        <span>Email Address</span>
+        <input type="email" name="email" required autocomplete="username" placeholder="alex@engineering.com">
+      </label>
 
-    // Question Catalog
-    function renderQuestionCatalog() {
-      const container = document.getElementById('questionsContainer');
-      const search = document.getElementById('searchInput').value.toLowerCase().trim();
-      const course = document.getElementById('courseFilter').value;
-      const diff = document.getElementById('diffFilter').value;
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+      </label>
 
-      const filtered = allQuestions.filter(q => {
-        if (course !== 'ALL' && q.course !== course) return false;
-        if (diff !== 'ALL' && q.difficulty !== diff) return false;
-        if (search) {
-          const matchText = (q.text || '').toLowerCase().includes(search);
-          const matchTopic = (q.topic || '').toLowerCase().includes(search);
-          const matchSub = (q.subject || '').toLowerCase().includes(search);
-          if (!matchText && !matchTopic && !matchSub) return false;
-        }
-        return true;
-      });
+      <div id="register-fields" hidden>
+        <label class="field">
+          <span>Full Name</span>
+          <input type="text" name="name" autocomplete="name" placeholder="Alex Kumar">
+        </label>
+        <div class="fields-row">
+          <label class="field">
+            <span>College / Org</span>
+            <input type="text" name="college" placeholder="IIT / BITS / Stanford">
+          </label>
+          <label class="field">
+            <span>Branch / Major</span>
+            <input type="text" name="branch" placeholder="Computer Science">
+          </label>
+        </div>
+      </div>
 
-      document.getElementById('countSummary').textContent = `Showing ${filtered.length} of ${allQuestions.length} questions`;
+      <p class="login-error" id="login-error" hidden></p>
 
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="card" style="text-align:center; padding:32px; color:var(--text-sec);"><p>No questions matched your current filter criteria.</p></div>`;
-        return;
-      }
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-submit">Sign in</button>
+      <button type="button" class="btn btn-quiet btn-block mt-2" id="login-toggle">Need an account? Register</button>
+    </form>
+  </div>
+</section>
 
-      container.innerHTML = filtered.map(q => {
-        const diffClass = (q.difficulty || 'MEDIUM').toLowerCase();
-        let optionsHtml = '';
-        if (q.options && q.options.length > 0) {
-          optionsHtml = `<div class="q-options">` + q.options.map((opt, i) => {
-            const letter = String.fromCharCode(65 + i);
-            return `
-              <button class="opt-btn" onclick="handleCatalogAnswer('${q.id}', '${escapeHtml(opt)}', this)">
-                <span class="opt-key">${letter}</span>
-                <span>${escapeHtml(opt)}</span>
-              </button>
-            `;
-          }).join('') + `</div>`;
-        }
+<!-- ========================= APP SHELL ========================== -->
+<div id="app" class="app" hidden>
+  <div class="shell">
+    <nav class="nav" id="nav"></nav>
+    <main class="main">
+      <div class="view-head" id="view-head"></div>
 
-        return `
-          <div class="q-card" id="card-${q.id}">
-            <div class="q-header">
-              <div class="q-meta">
-                <span class="badge badge-${diffClass}">${q.difficulty}</span>
-                <span class="q-track">${q.course || 'CSE'} &bull; ${q.subject || ''} &bull; ${q.topic || ''}</span>
-              </div>
-              <span style="font-size:12px; color:var(--text-sec); font-family:'JetBrains Mono', monospace;">#${q.id}</span>
-            </div>
-            <div class="q-text">${escapeHtml(q.text)}</div>
-            ${optionsHtml}
-            <div class="q-explanation" id="exp-${q.id}">
-              <strong>Explanation:</strong> ${escapeHtml(q.explanation || 'No detailed explanation provided.')}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+      <section id="view-problems" class="view"></section>
+      <section id="view-problem" class="view" hidden></section>
+      <section id="view-dashboard" class="view" hidden></section>
+      <section id="view-skills" class="view" hidden></section>
+      <section id="view-profile" class="view" hidden></section>
+      <section id="view-submissions" class="view" hidden></section>
+      <section id="view-board" class="view" hidden></section>
+      <section id="view-admin" class="view" hidden></section>
+      <section id="view-interview" class="view" hidden></section>
+      <section id="view-report" class="view" hidden></section>
+      <section id="view-daily" class="view" hidden></section>
+      <section id="view-start" class="view" hidden></section>
+    </main>
+  </div>
+</div>
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
+<!-- ======================= COMMAND PALETTE ====================== -->
+<div id="cmdk" class="cmdk-backdrop" hidden>
+  <div class="cmdk" role="dialog" aria-label="Command palette">
+    <input id="cmdk-input" type="text" placeholder="Search problems, jump to a page…" autocomplete="off" spellcheck="false">
+    <div class="cmdk-list" id="cmdk-list"></div>
+    <div class="cmdk-foot">
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate</span>
+      <span><kbd>&crarr;</kbd> open</span>
+      <span><kbd>esc</kbd> close</span>
+    </div>
+  </div>
+</div>
 
-    window.handleCatalogAnswer = function(qid, chosenOption, btnEl) {
-      const q = allQuestions.find(item => item.id === qid);
-      if (!q) return;
+<!-- ========================= BOOT ERROR ======================== -->
+<section id="boot-error" class="boot-error" hidden>
+  <div class="boot-error-card">
+    <h2>The interface failed to start</h2>
+    <p>The page shell loaded, but its script did not finish. The message below is the actual browser error.</p>
+    <pre id="boot-error-detail" class="problem-text"></pre>
+  </div>
+</section>
 
-      const card = document.getElementById('card-' + qid);
-      const buttons = card.querySelectorAll('.opt-btn');
-      buttons.forEach(b => b.disabled = true);
-
-      const isCorrect = (chosenOption.trim().toLowerCase() === (q.answer || '').trim().toLowerCase());
-      userState.userAnswers[qid] = isCorrect;
-      userState.solved++;
-
-      if (isCorrect) {
-        userState.correct++;
-        userState.score += 10;
-        btnEl.classList.add('correct');
-      } else {
-        btnEl.classList.add('incorrect');
-        buttons.forEach(b => {
-          if (b.textContent.includes(q.answer)) b.classList.add('correct');
-        });
-      }
-
-      const exp = document.getElementById('exp-' + qid);
-      if (exp) exp.classList.add('visible');
-
-      updateUserDashboard();
-    };
-
-    function updateUserDashboard() {
-      document.getElementById('dashSolvedCount').textContent = userState.solved;
-      const pct = Math.round((userState.solved / (allQuestions.length || 1)) * 100);
-      document.getElementById('dashProgressBar').style.width = pct + '%';
-      document.getElementById('scoreVal').textContent = userState.score + ' pts';
-      const acc = userState.solved > 0 ? Math.round((userState.correct / userState.solved) * 100) : 100;
-      document.getElementById('accuracyVal').textContent = acc + '%';
-    }
-
-    // Live Simulation State
-    let sim = {
-      pool: [],
-      currentIndex: 0,
-      score: 0,
-      type: 'MOCK',
-      timerSec: 180,
-      timerInterval: null
-    };
-
-    function startInterviewSession(type, courseFilter = null) {
-      if (allQuestions.length === 0) return;
-      let pool = [...allQuestions];
-      if (courseFilter) pool = pool.filter(q => q.course === courseFilter);
-
-      // Shuffle
-      pool.sort(() => 0.5 - Math.random());
-      sim.pool = pool.slice(0, type === 'MOCK' ? 10 : 5);
-      sim.currentIndex = 0;
-      sim.score = 0;
-      sim.type = type;
-      sim.timerSec = (type === 'MOCK' ? 10 : 5) * 60;
-
-      navigateTo('interview');
-      renderSimQuestion();
-      startTimer();
-    }
-
-    function startDailyChallenge() {
-      startInterviewSession('ADAPTIVE', 'CSE');
-    }
-
-    function filterAndPractice(course, type) {
-      startInterviewSession(type, course);
-    }
-
-    function launchResumeMock() {
-      startInterviewSession('MOCK', 'CSE');
-    }
-
-    function startTimer() {
-      clearInterval(sim.timerInterval);
-      sim.timerInterval = setInterval(() => {
-        sim.timerSec--;
-        if (sim.timerSec <= 0) {
-          clearInterval(sim.timerInterval);
-          finishInterview();
-        }
-        const m = String(Math.floor(sim.timerSec / 60)).padStart(2, '0');
-        const s = String(sim.timerSec % 60).padStart(2, '0');
-        document.getElementById('simTimer').textContent = `⏱️ ${m}:${s}`;
-      }, 1000);
-    }
-
-    function renderSimQuestion() {
-      const q = sim.pool[sim.currentIndex];
-      const total = sim.pool.length;
-      document.getElementById('simCounter').textContent = `Question ${sim.currentIndex + 1} of ${total}`;
-      document.getElementById('simScoreTrack').textContent = `Current Score: ${sim.score}`;
-      document.getElementById('simDiffBadge').textContent = q.difficulty;
-      document.getElementById('simDiffBadge').className = `badge badge-${(q.difficulty||'medium').toLowerCase()}`;
-      document.getElementById('simQuestionTitle').textContent = q.text;
-
-      const optsContainer = document.getElementById('simOptionsArea');
-      const feedback = document.getElementById('simExplanationArea');
-      const nextBtn = document.getElementById('simNextButton');
-      feedback.classList.remove('visible');
-      nextBtn.style.display = 'none';
-
-      optsContainer.innerHTML = (q.options || []).map((opt, i) => {
-        const letter = String.fromCharCode(65 + i);
-        return `
-          <button class="opt-btn" onclick="handleSimChoice('${escapeHtml(opt)}', this)">
-            <span class="opt-key">${letter}</span>
-            <span>${escapeHtml(opt)}</span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    window.handleSimChoice = function(chosenOpt, btn) {
-      const q = sim.pool[sim.currentIndex];
-      const buttons = document.querySelectorAll('#simOptionsArea .opt-btn');
-      buttons.forEach(b => b.disabled = true);
-
-      const isCorrect = (chosenOpt.trim().toLowerCase() === (q.answer || '').trim().toLowerCase());
-      if (isCorrect) {
-        sim.score++;
-        btn.classList.add('correct');
-      } else {
-        btn.classList.add('incorrect');
-        buttons.forEach(b => {
-          if (b.textContent.includes(q.answer)) b.classList.add('correct');
-        });
-      }
-
-      const feedback = document.getElementById('simExplanationArea');
-      feedback.textContent = q.explanation || 'No explanation provided.';
-      feedback.classList.add('visible');
-
-      const nextBtn = document.getElementById('simNextButton');
-      nextBtn.style.display = 'inline-flex';
-      nextBtn.textContent = sim.currentIndex < sim.pool.length - 1 ? 'Next Question →' : 'View Performance Report →';
-    };
-
-    function nextSimQuestion() {
-      if (sim.currentIndex < sim.pool.length - 1) {
-        sim.currentIndex++;
-        renderSimQuestion();
-      } else {
-        finishInterview();
-      }
-    }
-
-    function leaveInterview() {
-      clearInterval(sim.timerInterval);
-      navigateTo('dashboard');
-    }
-
-    function finishInterview() {
-      clearInterval(sim.timerInterval);
-      document.getElementById('reportScoreVal').textContent = `${sim.score} / ${sim.pool.length}`;
-      const pct = Math.round((sim.score / (sim.pool.length || 1)) * 100);
-      document.getElementById('reportAccVal').textContent = `${pct}%`;
-      navigateTo('feedback');
-    }
-
-    function buildCalendar() {
-      const cal = document.getElementById('profileCalendar');
-      cal.innerHTML = '';
-      for (let i = 1; i <= 31; i++) {
-        const active = [5, 6, 7, 8, 9, 10, 11, 12].includes(i);
-        const dayEl = document.createElement('div');
-        dayEl.className = `cal-day ${active ? 'active' : ''}`;
-        dayEl.textContent = i;
-        cal.appendChild(dayEl);
-      }
-    }
-
-    // Theme Switcher
-    const themeBtn = document.getElementById('themeToggle');
-    themeBtn.onclick = () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      themeBtn.textContent = isDark ? '🌙 Theme' : '☀️ Theme';
-    };
-
-    // Filter listeners
-    document.getElementById('searchInput').oninput = renderQuestionCatalog;
-    document.getElementById('courseFilter').onchange = renderQuestionCatalog;
-    document.getElementById('diffFilter').onchange = renderQuestionCatalog;
-
-    // Boot
-    initApp();
-  </script>
+<script src="./offline.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
