@@ -459,29 +459,60 @@ views.submissions = function (rows) {
 
 views.board = function (rows) {
   var s = state.stats || {};
-  var total = (s.available && s.available.total) || 0;
+  var total = (s.available && s.available.total) || (state.problems && state.problems.length) || 310;
+  var currentSort = state.boardSort || 'score';
   var parts = [];
+
+  // Top header with filters
+  parts.push('<div class="board-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px;">');
+  parts.push('<div><h2 style="margin:0 0 4px 0;font-size:20px;font-weight:700;">Global Placement Leaderboard</h2>' +
+             '<p class="muted" style="margin:0;font-size:13px;">Real-time student rankings across 310 interview questions and active streaks.</p></div>');
+  parts.push('<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+             '<span class="muted" style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Rank by:</span>' +
+             '<button class="btn btn-sm board-sort-btn' + (currentSort === 'score' ? ' btn-primary' : '') + '" data-sort="score">🏆 Score</button>' +
+             '<button class="btn btn-sm board-sort-btn' + (currentSort === 'solved' ? ' btn-primary' : '') + '" data-sort="solved">⚡ Solved</button>' +
+             '<button class="btn btn-sm board-sort-btn' + (currentSort === 'streak' ? ' btn-primary' : '') + '" data-sort="streak">🔥 Streak</button>' +
+             '<button class="btn btn-sm" id="board-refresh-btn" title="Refresh Rankings">🔄 Refresh</button>' +
+             '</div></div>');
+
+  // Podium (Top 3)
   parts.push('<div class="podium">');
-  var medals = ['#1', '#2', '#3'];
+  var medals = ['🥇 #1 Champion', '🥈 #2 Runner Up', '🥉 #3 Contender'];
   for (var i = 0; i < rows.length && i < 3; i++) {
     var r = rows[i];
     parts.push('<div class="podium-card' + (i === 0 ? ' rank-1' : '') + '">' +
-               '<div class="meta">' + medals[i] + '</div>' +
-               '<div class="value">' + (r.solved || 0) + '/' + total + '</div>' +
-               '<div class="muted">' + esc(r.name) + '</div></div>');
+               '<div class="meta" style="font-weight:700;">' + medals[i] + '</div>' +
+               '<div style="font-weight:700;font-size:16px;margin:8px 0 4px 0;color:var(--text);">' + esc(r.name) + '</div>' +
+               '<div class="value" style="font-size:20px;font-weight:800;color:var(--accent);">' + (r.solved || 0) + ' <span style="font-size:13px;font-weight:500;color:var(--muted);">/ ' + total + '</span></div>' +
+               '<div class="muted" style="font-size:12px;margin-top:6px;">' + (r.score !== undefined ? r.score : (r.solved * 10)) + ' pts • 🔥 ' + (r.streak || 0) + 'd streak</div></div>');
   }
   parts.push('</div>');
 
+  // Table
   parts.push('<div class="table-wrap"><table><thead><tr>' +
-             '<th>#</th><th>Developer</th><th>Solved</th><th>Rate</th><th>Achievement</th><th>Progress</th>' +
+             '<th>Rank</th><th>Candidate</th><th>Solved</th><th>Score</th><th>Streak</th><th>Completion</th><th>Tier</th><th>Progress</th>' +
              '</tr></thead><tbody>');
+  
+  var activeUserName = (state.user && state.user.name) || '';
+
   for (var j = 0; j < rows.length; j++) {
     var row = rows[j];
+    var isMe = row.name && (row.name.indexOf('(Candidate)') !== -1 || row.name.indexOf('(You)') !== -1 || (activeUserName && row.name.indexOf(activeUserName) !== -1));
     var rate = total > 0 ? ((row.solved / total) * 100).toFixed(1) + '%' : '0%';
-    var achievement = row.solved >= total && total > 0 ? 'Master' : 'Practitioner';
-    parts.push('<tr><td class="muted">' + (j + 1) + '</td><td>' + esc(row.name) + '</td>' +
-               '<td>' + (row.solved || 0) + '/' + total + '</td>' +
-               '<td>' + rate + '</td><td>' + achievement + '</td>' +
+    var achievement = row.solved >= 50 ? 'Grandmaster' :
+                      row.solved >= 25 ? 'Master' :
+                      row.solved >= 10 ? 'Specialist' :
+                      row.solved >= 1  ? 'Practitioner' : 'Candidate';
+    var medalEmoji = j === 0 ? '🥇 ' : j === 1 ? '🥈 ' : j === 2 ? '🥉 ' : '';
+    var rowStyle = isMe ? ' style="background:rgba(99,102,241,0.08);font-weight:600;"' : '';
+
+    parts.push('<tr' + rowStyle + '><td class="muted">' + medalEmoji + (j + 1) + '</td>' +
+               '<td>' + esc(row.name) + (isMe ? ' <span style="font-size:11px;padding:2px 6px;border-radius:4px;background:var(--accent);color:#fff;margin-left:4px;">YOU</span>' : '') + '</td>' +
+               '<td><b>' + (row.solved || 0) + '</b> <span class="muted" style="font-size:11px;">/ ' + total + '</span></td>' +
+               '<td>' + (row.score !== undefined ? row.score : (row.solved * 10)) + ' pts</td>' +
+               '<td>🔥 ' + (row.streak || 0) + 'd</td>' +
+               '<td>' + rate + '</td>' +
+               '<td><span class="badge" style="font-size:11px;">' + achievement + '</span></td>' +
                '<td>' + blocks(total > 0 ? Math.round((row.solved / total) * 10) : 0, 10) + '</td></tr>');
   }
   parts.push('</tbody></table></div>');
@@ -1160,12 +1191,31 @@ function loadSubmissions() {
   });
 }
 
-function loadBoard() {
-  var pStats = state.stats ? Promise.resolve(state.stats) : loadStats();
-  pStats.then(function () {
-    return api.board('global', 'alltime', 'score');
+function loadBoard(sortOverride) {
+  if (sortOverride) {
+    state.boardSort = sortOverride;
+  }
+  var sortKey = state.boardSort || 'score';
+
+  loadStats().then(function () {
+    return api.board('global', 'alltime', sortKey);
   }).then(function (rows) {
-    setHtml('view-board', views.board(rows || []));
+    state.boardRows = rows || [];
+    setHtml('view-board', views.board(state.boardRows));
+
+    var sortBtns = document.querySelectorAll('.board-sort-btn');
+    for (var i = 0; i < sortBtns.length; i++) {
+      sortBtns[i].addEventListener('click', function (e) {
+        var s = e.currentTarget.getAttribute('data-sort');
+        loadBoard(s);
+      });
+    }
+    var refreshBtn = $('board-refresh-btn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', function () {
+        loadBoard();
+      });
+    }
   }).catch(function (e) {
     setHtml('view-board', '<p class="notice">' + esc(e.message) + '</p>');
   });

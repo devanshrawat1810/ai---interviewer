@@ -554,13 +554,16 @@ progress::-moz-progress-bar { background: var(--accent); border-radius: var(--r-
 .verdict b { display: block; margin-bottom: 3px; }
 
 /* Podium */
-.podium { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.podium { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
 .podium-card {
   background: var(--surface-1); border: 1px solid var(--line);
-  border-radius: var(--r-lg); padding: 20px 16px; text-align: center;
+  border-radius: var(--r-lg); padding: 22px 18px; text-align: center;
   box-shadow: var(--shadow-1);
+  transition: transform var(--fast), box-shadow var(--fast);
 }
-.podium-card.rank-1 { border-color: var(--warn); background: linear-gradient(180deg, var(--warn-dim), var(--surface-1)); }
+.podium-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+.podium-card.rank-1 { border-color: #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), var(--surface-1)); }
+.podium-card .meta { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* --------------------------------------------------------------------------
    Command palette
