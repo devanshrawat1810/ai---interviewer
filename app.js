@@ -1161,7 +1161,10 @@ function loadSubmissions() {
 }
 
 function loadBoard() {
-  api.board('global', 'alltime', 'score').then(function (rows) {
+  var pStats = state.stats ? Promise.resolve(state.stats) : loadStats();
+  pStats.then(function () {
+    return api.board('global', 'alltime', 'score');
+  }).then(function (rows) {
     setHtml('view-board', views.board(rows || []));
   }).catch(function (e) {
     setHtml('view-board', '<p class="notice">' + esc(e.message) + '</p>');

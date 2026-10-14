@@ -336,14 +336,54 @@
   }
 
   /* -----------------------------------------------------------------------
-     Leaderboard
+     Leaderboard — dynamic multi-candidate rankings
   ----------------------------------------------------------------------- */
   function handleBoard() {
     var store = getStore();
     var solvedCount = Object.keys(store.solved).length;
-    return ok([
-      { name: 'You (Guest)', solved: solvedCount, score: solvedCount * 10, rank: 1 }
-    ]);
+    var userScore = solvedCount * 10;
+
+    return fetch('./data/users.json')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return []; })
+      .then(function (users) {
+        var rows = [];
+        var currentUserName = (load().user && load().user.name) || 'You (Candidate)';
+        
+        // Add current active candidate
+        rows.push({
+          name: currentUserName,
+          solved: solvedCount,
+          score: userScore,
+          streak: store.streak || 0
+        });
+
+        // Add roster candidates
+        for (var i = 0; i < users.length; i++) {
+          var u = users[i];
+          if (u.role === 'admin') continue;
+          var uSolved = (u.solvedEasy || 0) + (u.solvedMedium || 0) + (u.solvedHard || 0);
+          rows.push({
+            name: u.name + ' (' + (u.college ? u.college.split(' ')[0] : 'Campus') + ')',
+            solved: uSolved || Math.round((u.totalScore || 100) / 20),
+            score: u.totalScore || 100,
+            streak: u.streak || 0
+          });
+        }
+
+        // Sort by solved count desc, then score desc
+        rows.sort(function (a, b) {
+          if (b.solved !== a.solved) return b.solved - a.solved;
+          return b.score - a.score;
+        });
+
+        // Assign ranks
+        for (var j = 0; j < rows.length; j++) {
+          rows[j].rank = j + 1;
+        }
+
+        return ok(rows);
+      });
   }
 
   /* -----------------------------------------------------------------------
