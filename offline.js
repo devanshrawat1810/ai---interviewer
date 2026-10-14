@@ -336,14 +336,81 @@
   }
 
   /* -----------------------------------------------------------------------
-     Leaderboard
+     Leaderboard — dynamic multi-candidate rankings with Strategy support
   ----------------------------------------------------------------------- */
-  function handleBoard() {
+  function handleBoard(search) {
     var store = getStore();
-    var solvedCount = Object.keys(store.solved).length;
-    return ok([
-      { name: 'You (Guest)', solved: solvedCount, score: solvedCount * 10, rank: 1 }
-    ]);
+    var solvedCount = Object.keys(store.solved || {}).length;
+    var userScore = solvedCount * 10;
+    var ranking = search ? (search.get('ranking') || 'score') : 'score';
+
+    return fetch('./data/users.json')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return []; })
+      .then(function (users) {
+        if (!users || !users.length) {
+          users = [
+            { name: 'Alice Johnson', college: 'MIT Engineering', totalScore: 520, solvedEasy: 8, solvedMedium: 5, solvedHard: 2, streak: 7 },
+            { name: 'Bob Smith', college: 'Stanford Tech', totalScore: 280, solvedEasy: 4, solvedMedium: 2, solvedHard: 1, streak: 3 },
+            { name: 'Charlie Davis', college: 'IIT Bombay', totalScore: 140, solvedEasy: 3, solvedMedium: 1, solvedHard: 0, streak: 1 },
+            { name: 'Diana Prince', college: 'BITS Pilani', totalScore: 90, solvedEasy: 2, solvedMedium: 1, solvedHard: 0, streak: 2 }
+          ];
+        }
+
+        var rows = [];
+        var d = load();
+        var currentUserName = d.userName || (d.user && d.user.name) || 'You (Candidate)';
+        
+        // Add current active candidate
+        rows.push({
+          name: currentUserName,
+          solved: solvedCount,
+          score: userScore,
+          streak: store.streak || 0
+        });
+
+        // Add roster candidates
+        for (var i = 0; i < users.length; i++) {
+          var u = users[i];
+          if (u.role === 'admin') continue;
+          var uSolved = (u.solvedEasy || 0) + (u.solvedMedium || 0) + (u.solvedHard || 0);
+          rows.push({
+            name: u.name + ' (' + (u.college ? u.college.split(' ')[0] : 'Campus') + ')',
+            solved: uSolved || Math.round((u.totalScore || 100) / 20),
+            score: u.totalScore || (uSolved * 10),
+            streak: u.streak || 0
+          });
+        }
+
+        // Strategy Pattern: Sort by requested criteria with deterministic tie-breaking
+        if (ranking === 'streak') {
+          rows.sort(function (a, b) {
+            if (b.streak !== a.streak) return b.streak - a.streak;
+            if (b.score !== a.score) return b.score - a.score;
+            return b.solved - a.solved;
+          });
+        } else if (ranking === 'solved') {
+          rows.sort(function (a, b) {
+            if (b.solved !== a.solved) return b.solved - a.solved;
+            if (b.score !== a.score) return b.score - a.score;
+            return b.streak - a.streak;
+          });
+        } else {
+          // Default: Total Score
+          rows.sort(function (a, b) {
+            if (b.score !== a.score) return b.score - a.score;
+            if (b.solved !== a.solved) return b.solved - a.solved;
+            return b.streak - a.streak;
+          });
+        }
+
+        // Assign ranks
+        for (var j = 0; j < rows.length; j++) {
+          rows[j].rank = j + 1;
+        }
+
+        return ok(rows);
+      });
   }
 
   /* -----------------------------------------------------------------------
@@ -636,7 +703,7 @@
     if (bookMatch && method === 'POST') return handleBookmark(decodeURIComponent(bookMatch[1]));
 
     if (method === 'GET'  && path === '/api/submissions')      return handleSubmissions();
-    if (method === 'GET'  && path === '/api/leaderboard')      return handleBoard();
+    if (method === 'GET'  && path === '/api/leaderboard')      return handleBoard(search);
     if (method === 'GET'  && path === '/api/courses')          return handleCourses();
     if (method === 'GET'  && path === '/api/daily-challenge')  return handleDaily();
     if (method === 'GET'  && path === '/api/skills')           return handleSkills();
